@@ -114,14 +114,20 @@ export function PanelApp() {
   useEffect(() => {
     const onRuntime = (msg: { type?: string }, _s: unknown, reply: (r: unknown) => void) => {
       if (msg?.type !== "OPEN_CURRENT") return
-      chrome.storage.local.get("queue").then(({ queue: q }) => {
-        if (q) {
-          setQueue(q as Queue)
-          queueRef.current = q as Queue
-        }
-        openCurrent(q as Queue)
-        reply({ ok: true })
-      })
+      chrome.storage.local
+        .get("queue")
+        .then(({ queue: q }) => {
+          if (q) {
+            setQueue(q as Queue)
+            queueRef.current = q as Queue
+          }
+          openCurrent(q as Queue)
+          reply({ ok: true })
+        })
+        .catch((err) => {
+          log("couldn't read queue", err)
+          reply({ ok: false })
+        })
       return true
     }
     chrome.runtime.onMessage.addListener(onRuntime)
@@ -171,6 +177,7 @@ export function PanelApp() {
         onRemove={(defId) => {
           const q = queueRef.current
           const removedIndex = q.players.findIndex((p) => p.defId === defId)
+          if (removedIndex === -1) return
           const players = q.players.filter((p) => p.defId !== defId)
           const index = removedIndex < q.index ? q.index - 1 : Math.min(q.index, Math.max(0, players.length - 1))
           update({ ...q, players, index, done: q.done.filter((d) => d !== defId) })
