@@ -43,7 +43,7 @@
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
   },
-  "description": "Scouty Player 27: scout players on fut.gg, open them in the FC 27 Web App Transfer Market. Read-only: never buys, bids or lists.",
+  "description": "Scouty Player 27: open fut.gg players in the FC 27 Transfer Market with Max Buy Now set. Great for FUT Gallery sets. Read-only.",
   "license": "MIT",
   "packageManager": "pnpm@10.15.0"
 }

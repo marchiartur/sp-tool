@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SP Tool 27",
   "version": "1.0.0",
-  "description": "Scouty Player 27: scout players on fut.gg, open them in the FC 27 Web App Transfer Market. Read-only: never buys, bids or lists.",
+  "description": "Scouty Player 27: open fut.gg players in the FC 27 Transfer Market with Max Buy Now set. Great for FUT Gallery sets. Read-only.",
   "permissions": ["storage"],
   "host_permissions": ["https://www.fut.gg/*", "https://www.ea.com/*"],
   "background": { "service_worker": "background.js" },

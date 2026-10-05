@@ -23,6 +23,7 @@ export default function Landing() {
         <Hero />
         <HowItWorks />
         <Features />
+        <GallerySection />
         <ReadOnly />
         <Install />
         <Faq />
@@ -227,6 +228,46 @@ function Features() {
   )
 }
 
+// ---------- FUT Gallery use case ----------
+
+const GALLERY_FLOW = [
+  { title: "Open a Gallery set on fut.gg", body: "Club, league or rarity sets list every player with its price." },
+  { title: "Queue team", body: "Every player in the set lands in the panel, in order." },
+  { title: "Check each value in the market", body: "Each search opens with Max Buy Now preset, so overpriced listings are already filtered out." },
+  { title: "Buy, collect, sell back", body: "The Gallery keeps a player once it has been in your club, so you can relist it after." },
+]
+
+function GallerySection() {
+  return (
+    <section id="gallery" className="scroll-mt-16 border-t px-4 py-20 sm:px-6 sm:py-24">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-primary">FUT Gallery</p>
+          <h2 className="mt-3 font-display text-3xl font-bold uppercase tracking-wide sm:text-[38px]">Fill Gallery sets faster</h2>
+          <p className="mt-4 leading-relaxed text-muted-foreground">
+            FC 27's FUT Gallery rewards you for every player that passes through your club: complete a set, raise its grade and earn Gallery
+            Tokens for Hall of FUT players. Most of the work is checking what each player in a set costs. SP Tool 27 turns a fut.gg Gallery set
+            into a queue, so you can price-check the whole set in the Transfer Market in a few clicks.
+          </p>
+        </div>
+        <Card className="rounded-[18px] p-6 shadow-none sm:p-8">
+          <ol className="space-y-5">
+            {GALLERY_FLOW.map((s, i) => (
+              <li key={s.title} className="flex gap-4">
+                <span className="grid size-7 shrink-0 place-items-center rounded-full border border-input font-display text-xs font-semibold tabular">{i + 1}</span>
+                <div className="pt-0.5">
+                  <h3 className="font-semibold">{s.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Card>
+      </div>
+    </section>
+  )
+}
+
 // ---------- read-only promise ----------
 
 const DOES = ["Reads the fut.gg page you have open", "Fills in EA's own Transfer Market search", "Keeps your queue in your browser"]
@@ -311,6 +352,10 @@ const FAQ: { q: string; a: ReactNode }[] = [
     a: "SP Tool 27 never trades or automates anything: it opens the same search screen you would open by hand. EA's terms still discourage third-party tools with the Web App, so use it at your own risk.",
   },
   { q: "What does SP stand for?", a: "Scouty Player. You scout players on fut.gg, and it takes them straight to the market. The 27 is for FC 27." },
+  {
+    q: "Does it help with the FUT Gallery?",
+    a: "Yes. Open any FC 27 FUT Gallery set on fut.gg, click Queue team, and check every player's Transfer Market price one after another. The Gallery records a player once it has been in your club (loan players don't count), so you can sell it back afterwards. Buying and selling stay manual.",
+  },
   { q: "Does it cost anything?", a: "No. It's free and open source under the MIT license." },
   {
     q: "It stopped working after an EA update.",

@@ -11,6 +11,9 @@ A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 - Sets the **Max Buy Now** filter from the card's fut.gg price.
 - **Queue team**: one click on a fut.gg gallery page queues every player in it. A panel in the Web App lets you step through them (Next / Prev, jump to any player, adjust Max Buy Now).
 
+### Great for the FUT Gallery
+FC 27's FUT Gallery records every player that passes through your club, and completing sets earns Gallery Tokens for Hall of FUT players. Open any Gallery set on fut.gg (club, league or rarity), click **Queue team**, and price-check every player in the Transfer Market one after another. Buying and selling stay manual.
+
 ## Install
 1. Download **sp-tool-27-vX.Y.Z.zip** from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
