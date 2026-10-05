@@ -1,0 +1,44 @@
+# Push a tag like v1.0.1 to build the extension and publish it as a GitHub Release.
+# The asset name stays fixed, so releases/latest/download/sp-tool-27.zip always works.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check the tag matches the manifest version
+        run: |
+          manifest=$(node -p "require('./extension-static/manifest.json').version")
+          if [ "v$manifest" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest version $manifest"
+            exit 1
+          fi
+
+      - run: pnpm test
+      - run: pnpm build:ext
+
+      - name: Zip the extension
+        run: cd extension && zip -r ../sp-tool-27.zip .
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" sp-tool-27.zip --title "SP Tool 27 $GITHUB_REF_NAME" --generate-notes
