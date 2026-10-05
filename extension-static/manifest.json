@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "FUT.GG to Web App Player Finder",
+  "version": "1.0.0",
+  "description": "Queue players from fut.gg galleries and open them in the EA FC Web App Transfer Market. Read-only: never buys, bids or lists.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.fut.gg/*", "https://www.ea.com/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.fut.gg/*"],
+      "js": ["futgg.js"],
+      "css": ["futgg.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.ea.com/*ultimate-team/web-app*"],
+      "js": ["panel.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.ea.com/*ultimate-team/web-app*"],
+      "js": ["ea-main.js"],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    { "resources": ["fonts/*"], "matches": ["https://www.fut.gg/*", "https://www.ea.com/*"] }
+  ]
+}

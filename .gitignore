@@ -1,0 +1,7 @@
+node_modules/
+/dist/
+/ext-build/
+/extension/
+.parcel-cache/
+*.zip
+.DS_Store
