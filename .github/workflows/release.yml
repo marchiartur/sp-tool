@@ -1,5 +1,5 @@
-# Push a tag like v1.0.1 to build the extension and publish it as a GitHub Release.
-# The asset name stays fixed, so releases/latest/download/sp-tool-27.zip always works.
+# Push a tag like v1.0.1 to build the extension and publish it as a GitHub Release
+# named sp-tool-27-v1.0.1.zip, with that version's CHANGELOG.md section as the notes.
 name: Release
 
 on:
@@ -24,21 +24,27 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Check the tag matches the manifest version
+      - name: Check the tag matches the manifest and the changelog
         run: |
-          manifest=$(node -p "require('./extension-static/manifest.json').version")
-          if [ "v$manifest" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match manifest version $manifest"
+          version=$(node -p "require('./extension-static/manifest.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest version $version"
             exit 1
           fi
+          awk -v v="[$version]" '/^## \[/ { p = index($0, v) > 0; next } p' CHANGELOG.md > notes.md
+          if ! grep -q . notes.md; then
+            echo "::error::CHANGELOG.md has no section for [$version]"
+            exit 1
+          fi
+          echo "ZIP=sp-tool-27-v$version.zip" >> "$GITHUB_ENV"
 
       - run: pnpm test
       - run: pnpm build:ext
 
       - name: Zip the extension
-        run: cd extension && zip -r ../sp-tool-27.zip .
+        run: cd extension && zip -r "../$ZIP" .
 
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" sp-tool-27.zip --title "SP Tool 27 $GITHUB_REF_NAME" --generate-notes
+        run: gh release create "$GITHUB_REF_NAME" "$ZIP" --title "SP Tool 27 $GITHUB_REF_NAME" --notes-file notes.md
