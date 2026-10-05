@@ -6,11 +6,20 @@ const EMPTY = { team: "", players: [], index: 0, done: [] };
 
 const log = (...a) => console.info("[fut.gg extension]", ...a);
 
+// Handlers read the queue, await, then write it back: run them one at a time
+// so fast Shift+clicks can't overwrite each other's players.
+let chain = Promise.resolve();
+const serial = (fn) => {
+  const run = chain.then(fn);
+  chain = run.catch(() => {});
+  return run;
+};
+
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   const handlers = { SEND_PLAYER: sendPlayer, QUEUE_TEAM: queueTeam, PANEL_READY: panelReady };
   const handler = handlers[msg?.type];
   if (!handler) return;
-  handler(msg, sender)
+  serial(() => handler(msg, sender))
     .then((res) => reply({ ok: true, ...res }))
     .catch((err) => {
       log(msg.type, "failed", err);
