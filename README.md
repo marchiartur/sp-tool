@@ -9,9 +9,14 @@ A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 - Sets the **Max Buy Now** filter from the card's fut.gg price.
 - **Queue team**: one click on a fut.gg gallery page queues every player in it. A panel in the Web App lets you step through them (Next / Prev, jump to any player, adjust Max Buy Now).
 
-![demo](docs/demo.gif)
+## Install
+1. Download [**sp-tool-27.zip**](https://github.com/marchiartur/sp-tool/releases/latest/download/sp-tool-27.zip) from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
+2. Open `chrome://extensions` and turn on **Developer mode**.
+3. Click **Load unpacked** and select the unzipped folder.
 
-## Install from source
+Works in Chrome, Edge, Brave and other Chromium browsers. To update, replace the folder with the new release and click the reload icon on the extension's card.
+
+### Install from source
 ```bash
 git clone https://github.com/marchiartur/sp-tool.git
 cd sp-tool
@@ -38,6 +43,10 @@ This project is not affiliated with, endorsed by, or connected to Electronic Art
 | `pnpm build:ext` | Builds the extension into `extension/` |
 | `pnpm build` | Type-checks and builds the UI preview |
 | `pnpm lint` | Runs oxlint |
+| `pnpm test` | Runs the unit tests |
+
+### Releasing
+Bump `version` in `extension-static/manifest.json`, commit, then push a matching tag (`git tag v1.0.1 && git push origin v1.0.1`). The release workflow tests, builds and attaches `sp-tool-27.zip` to a GitHub Release.
 
 ## License
 [MIT](LICENSE)
