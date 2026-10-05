@@ -40,8 +40,11 @@
     return coin ? parsePrice(coin.parentElement?.textContent || "") : null;
   }
 
+  // Only fut.gg's own player links: never queue a link that points off-site.
+  const isPlayerLink = (a) => a.origin === location.origin && PLAYER_RE.test(a.pathname);
+
   function playerFrom(a) {
-    const m = a.getAttribute("href")?.match(PLAYER_RE);
+    const m = isPlayerLink(a) && a.pathname.match(PLAYER_RE);
     if (!m) return null;
     const [, , slug, , defId] = m;
     return { defId: Number(defId), name: toName(slug), url: a.href, price: readPrice(a) };
@@ -93,7 +96,7 @@
 
   // ---------- card buttons ----------
   function decorate(a) {
-    if (a.dataset.futggExt || !a.querySelector("img") || !PLAYER_RE.test(a.getAttribute("href") || "")) return;
+    if (a.dataset.futggExt || !a.querySelector("img") || !isPlayerLink(a)) return;
     a.dataset.futggExt = "1";
     a.classList.add("fgx-host");
 

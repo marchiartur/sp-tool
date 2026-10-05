@@ -151,7 +151,7 @@ function Current({
   return (
     <div className="flex flex-col gap-3 border-t px-4 pb-3 pt-4">
       <div className="flex items-end justify-between gap-3">
-        <a href={player.url} target="_blank" rel="noopener" className="min-w-0 truncate font-display text-[26px] font-bold uppercase leading-none tracking-wide text-foreground hover:underline">
+        <a href={player.url} target="_blank" rel="noopener noreferrer" className="min-w-0 truncate font-display text-[26px] font-bold uppercase leading-none tracking-wide text-foreground hover:underline">
           {player.name}
         </a>
         <span className="shrink-0 text-xs text-muted-foreground tabular">{player.price ? fmt(player.price) : "No price"}</span>
