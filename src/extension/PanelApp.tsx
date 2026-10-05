@@ -35,7 +35,7 @@ export function PanelApp() {
   const connectionRef = useRef(connection)
   connectionRef.current = connection
   const pendingOpen = useRef(false)
-  const openTimer = useRef<number>()
+  const openTimer = useRef<number | undefined>(undefined)
   const heard = useRef(false)
 
   // ---------- open the current player in EA's results screen ----------
