@@ -4,17 +4,19 @@
 
 A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 
+**Website:** [marchiartur.github.io/sp-tool](https://marchiartur.github.io/sp-tool/) · **What's new:** [CHANGELOG.md](CHANGELOG.md)
+
 ## What it does
 - Adds an **Open** button to every player card on fut.gg. It opens that player in the Web App Transfer Market.
 - Sets the **Max Buy Now** filter from the card's fut.gg price.
 - **Queue team**: one click on a fut.gg gallery page queues every player in it. A panel in the Web App lets you step through them (Next / Prev, jump to any player, adjust Max Buy Now).
 
 ## Install
-1. Download [**sp-tool-27.zip**](https://github.com/marchiartur/sp-tool/releases/latest/download/sp-tool-27.zip) from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
+1. Download **sp-tool-27-vX.Y.Z.zip** from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Click **Load unpacked** and select the unzipped folder.
 
-Works in Chrome, Edge, Brave and other Chromium browsers. To update, replace the folder with the new release and click the reload icon on the extension's card.
+Works in Chrome, Edge, Brave and other Chromium browsers. A Chrome Web Store listing is coming soon. To update, replace the folder with the new release and click the reload icon on the extension's card.
 
 ### Install from source
 ```bash
@@ -39,14 +41,17 @@ This project is not affiliated with, endorsed by, or connected to Electronic Art
 ## Development
 | Command | What it does |
 | --- | --- |
-| `pnpm dev` | Dev server with the panel UI and sample data (no extension needed) |
+| `pnpm dev` | Dev server for the website; the panel's states with sample data are at `/preview.html` |
 | `pnpm build:ext` | Builds the extension into `extension/` |
-| `pnpm build` | Type-checks and builds the UI preview |
+| `pnpm build` | Type-checks and builds the website into `dist/` |
 | `pnpm lint` | Runs oxlint |
 | `pnpm test` | Runs the unit tests |
 
 ### Releasing
-Bump `version` in `extension-static/manifest.json`, commit, then push a matching tag (`git tag v1.0.1 && git push origin v1.0.1`). The release workflow tests, builds and attaches `sp-tool-27.zip` to a GitHub Release.
+1. Bump `version` in `extension-static/manifest.json` and add a matching `## [1.0.1] - YYYY-MM-DD` section to `CHANGELOG.md`.
+2. Commit, tag and push both together: `git tag v1.0.1 && git push origin main v1.0.1`.
+
+The release workflow checks the tag, manifest and changelog agree, then attaches `sp-tool-27-v1.0.1.zip` to a GitHub Release with that changelog section as its notes. The site workflow redeploys the website, whose download buttons and changelog page follow the manifest version and `CHANGELOG.md`.
 
 ## License
 [MIT](LICENSE)
