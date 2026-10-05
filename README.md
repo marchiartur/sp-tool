@@ -1,6 +1,8 @@
 # SP Tool 27
 
-Chrome extension that opens players from fut.gg galleries in the EA FC Web App Transfer Market, with Max Buy Now already set.
+**Scouty Player 27**: scout players on fut.gg, open them in the FC 27 Web App Transfer Market in one click, with Max Buy Now already set.
+
+A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 
 ## What it does
 - Adds an **Open** button to every player card on fut.gg. It opens that player in the Web App Transfer Market.
