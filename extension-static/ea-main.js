@@ -12,6 +12,7 @@
   const post = (msg) => window.postMessage({ src: TO_PANEL, ...msg }, location.origin);
   const log = (...a) => console.info("[fut.gg extension]", ...a);
 
+  // Same price ladder as src/panel/price.ts (this plain script can't import it): keep them in sync.
   function toValidPrice(price) {
     if (!price) return 0;
     const step = price <= 1000 ? 50 : price <= 10000 ? 100 : price <= 50000 ? 250 : price <= 100000 ? 500 : 1000;
