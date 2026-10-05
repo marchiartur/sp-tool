@@ -9,15 +9,15 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
   build: {
     rollupOptions: {
       input: {
-        index: path.resolve(__dirname, "index.html"),
-        changelog: path.resolve(__dirname, "changelog.html"),
-        preview: path.resolve(__dirname, "preview.html"),
+        index: path.resolve(import.meta.dirname, "index.html"),
+        changelog: path.resolve(import.meta.dirname, "changelog.html"),
+        preview: path.resolve(import.meta.dirname, "preview.html"),
       },
     },
   },

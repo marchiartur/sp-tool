@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 // Builds the panel as a single classic script for the extension's content_scripts.
 export default defineConfig({
   plugins: [react()],
-  resolve: { alias: { "@": path.resolve(__dirname, "./src") } },
+  resolve: { alias: { "@": path.resolve(import.meta.dirname, "./src") } },
   define: { "process.env.NODE_ENV": '"production"' },
   build: {
     outDir: "ext-build",
