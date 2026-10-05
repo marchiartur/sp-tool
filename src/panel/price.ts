@@ -13,9 +13,9 @@ export const down = (p: number) => snap(Math.max(MIN_PRICE, p - stepAt(p - 1)))
 
 export const fmt = (n: number) => n.toLocaleString("en-US")
 
-/** "2600", "2,600", "2.6k", "1.2m" -> number on the ladder, or null */
+/** "2600", "2,600", "1,500,000", "2.6k", "1.2m" -> number on the ladder, or null */
 export function parsePrice(text: string): number | null {
-  const m = text.trim().toLowerCase().replace(/\s/g, "").match(/^(\d+(?:[.,]\d+)?)([km])?$/)
+  const m = text.trim().toLowerCase().replace(/\s/g, "").match(/^(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)([km])?$/)
   if (!m) return null
   const n = m[2]
     ? parseFloat(m[1].replace(",", ".")) * (m[2] === "k" ? 1e3 : 1e6)
