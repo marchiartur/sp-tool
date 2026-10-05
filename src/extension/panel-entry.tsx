@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client"
 import css from "./panel.css?inline"
 import { PanelApp } from "./PanelApp"
 
-const HOST_ID = "futgg-player-finder"
+const HOST_ID = "sp-tool-27"
 
 // Fonts and @property must live in the document (they don't work inside a shadow root).
 function injectDocumentStyles() {

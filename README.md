@@ -1,41 +1,41 @@
-# Player Finder
+# SP Tool 27
 
-Queue players from a fut.gg gallery and open each one in the EA FC Web App
-Transfer Market, with Max Buy Now already set from the card price.
+Chrome extension that opens players from fut.gg galleries in the EA FC Web App Transfer Market, with Max Buy Now already set.
 
-**Read-only by design.** It never buys, bids or lists, and makes no network
-requests. It opens EA's own search screen; anything you buy, you buy yourself.
+## What it does
+- Adds an **Open** button to every player card on fut.gg. It opens that player in the Web App Transfer Market.
+- Sets the **Max Buy Now** filter from the card's fut.gg price.
+- **Queue team**: one click on a fut.gg gallery page queues every player in it. A panel in the Web App lets you step through them (Next / Prev, jump to any player, adjust Max Buy Now).
 
-## Features
-- **Queue team**: one click on a fut.gg gallery page queues every player.
-- **Open** on any card (Shift+click adds it to the queue).
-- Web App panel: adjust Max Buy Now, Next / Prev, jump to any player.
-- Handles Web App loading, logged out, offline and EA updates gracefully.
+![demo](docs/demo.gif)
 
-## Install (from source)
+## Install from source
 ```bash
-npm install
-npm run build:ext
+git clone https://github.com/marchiartur/sp-tool.git
+cd sp-tool
+pnpm install
+pnpm build:ext
 ```
-Then open `chrome://extensions`, turn on **Developer mode**, click
-**Load unpacked** and pick the `extension/` folder.
+Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the `extension/` folder in the project root.
 
-## Develop
-- `npm run preview:ui`: the panel in a browser with sample data (no extension needed).
-- `npm run build:ext`: builds the extension into `extension/`.
+## How to use
+1. Open the [EA FC Web App](https://www.ea.com/ea-sports-fc/ultimate-team/web-app/) and log in.
+2. On fut.gg, click **Open** on a player card (Shift+click adds it to the queue), or **Queue team** on a gallery page.
+3. In the Web App, use the panel to search each player, adjust Max Buy Now, and move to the next one.
 
-| Path | What it is |
-| --- | --- |
-| `src/panel/` | The panel UI (React + shadcn/ui), shared by preview and extension |
-| `src/extension/` | Mounts the panel in a Shadow DOM inside the Web App |
-| `extension-static/futgg.js` | fut.gg buttons (Open, Queue team) |
-| `extension-static/background.js` | Queue storage, picks one Web App tab |
-| `extension-static/ea-main.js` | Opens EA's results screen, reports Web App health |
+## Read-only by design
+SP Tool 27 never buys, bids, lists or automates trading of any kind. It only fills in EA's own Transfer Market search screen. Every purchase is a manual click you make yourself.
 
 ## Disclaimer
-Not affiliated with, endorsed by or sponsored by Electronic Arts or fut.gg.
-EA SPORTS FC and Ultimate Team are trademarks of Electronic Arts Inc.
-EA's rules discourage third-party extensions on the Web App; use at your own risk.
+This project is not affiliated with, endorsed by, or connected to Electronic Arts (EA), EA SPORTS FC, or fut.gg. All trademarks belong to their respective owners. Use at your own risk.
+
+## Development
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | Dev server with the panel UI and sample data (no extension needed) |
+| `pnpm build:ext` | Builds the extension into `extension/` |
+| `pnpm build` | Type-checks and builds the UI preview |
+| `pnpm lint` | Runs oxlint |
 
 ## License
-MIT
+[MIT](LICENSE)

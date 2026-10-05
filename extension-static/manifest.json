@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "FUT.GG to Web App Player Finder",
+  "name": "SP Tool 27",
   "version": "1.0.0",
   "description": "Queue players from fut.gg galleries and open them in the EA FC Web App Transfer Market. Read-only: never buys, bids or lists.",
   "permissions": ["storage"],
