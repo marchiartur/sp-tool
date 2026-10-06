@@ -42,6 +42,8 @@ export function useDemoQueue(initial: Queue) {
       return { ...q, players, index, done: q.done.filter((d) => d !== defId) }
     })
 
+  const clear = () => setQueue({ team: "", players: [], index: 0, done: [] })
+
   // Same rules as background.js: click opens the player now, Shift+click adds it to the end.
   const send = (player: Player, team: string, focus: boolean) => {
     setQueue((q) => {
@@ -68,5 +70,5 @@ export function useDemoQueue(initial: Queue) {
     search()
   }
 
-  return { queue, status, setStatus, search, go, setMax, remove, send, queueTeam }
+  return { queue, status, setStatus, search, go, setMax, remove, clear, send, queueTeam }
 }

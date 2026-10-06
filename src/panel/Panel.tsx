@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { AlertTriangle, Check, ChevronDown, ChevronLeft, ChevronRight, Loader2, LogIn, Minus, Plus, RotateCw, Search, WifiOff, X } from "lucide-react"
+import { AlertTriangle, Check, ChevronDown, ChevronLeft, ChevronRight, Loader2, LogIn, Minus, Plus, RotateCw, Search, Trash2, WifiOff, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -15,12 +15,13 @@ export interface PanelProps {
   onSearch: (max: number | null) => void              // search current player
   onSetMax: (defId: number, max: number | undefined) => void
   onRemove: (defId: number) => void
+  onClear: () => void                                 // empty the whole queue
 }
 
 export const maxOf = (p: Player) =>
   p.maxBuy !== undefined ? p.maxBuy || null : p.price ? snap(p.price) : null
 
-export function Panel({ queue, status, connection, onRetry, onGo, onSearch, onSetMax, onRemove }: PanelProps) {
+export function Panel({ queue, status, connection, onRetry, onGo, onSearch, onSetMax, onRemove, onClear }: PanelProps) {
   const [collapsed, setCollapsed] = useState(false)
   const { players, index, done } = queue
   const current = players[index]
@@ -125,6 +126,11 @@ export function Panel({ queue, status, connection, onRetry, onGo, onSearch, onSe
               )
             })}
           </ol>
+          <div className="flex justify-end border-t px-2 py-1">
+            <Button variant="ghost" size="sm" className="h-9 gap-1.5 text-xs text-muted-foreground hover:text-destructive" onClick={onClear}>
+              <Trash2 className="!size-3.5" /> Clear queue
+            </Button>
+          </div>
         </>
       )}
     </section>

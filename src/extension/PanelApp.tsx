@@ -182,6 +182,12 @@ export function PanelApp() {
           const index = removedIndex < q.index ? q.index - 1 : Math.min(q.index, Math.max(0, players.length - 1))
           update({ ...q, players, index, done: q.done.filter((d) => d !== defId) })
         }}
+        onClear={() => {
+          window.clearTimeout(openTimer.current)
+          pendingOpen.current = false
+          setStatus({ kind: "idle" })
+          update(EMPTY)
+        }}
       />
     </div>
   )

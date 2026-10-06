@@ -102,6 +102,7 @@ function Demo() {
               onSearch={demo.search}
               onSetMax={demo.setMax}
               onRemove={demo.remove}
+              onClear={demo.clear}
             />
           </div>
         </Window>

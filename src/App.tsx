@@ -119,6 +119,7 @@ export default function App() {
             onSearch={search}
             onSetMax={(id, max) => updatePlayer(id, { maxBuy: max })}
             onRemove={remove}
+            onClear={() => setQueue({ team: "", players: [], index: 0, done: [] })}
           />
         </div>
       </main>
