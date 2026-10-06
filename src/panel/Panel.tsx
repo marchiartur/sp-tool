@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AlertTriangle, Check, ChevronDown, ChevronLeft, ChevronRight, Loader2, LogIn, Minus, Plus, RotateCw, Search, Trash2, WifiOff, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { down, fmt, parsePrice, snap, up } from "./price"
+import { down, fmt, maxOf, parsePrice, up } from "./price"
 import type { Connection, Player, Queue, Status } from "./types"
 
 export interface PanelProps {
@@ -17,9 +17,6 @@ export interface PanelProps {
   onRemove: (defId: number) => void
   onClear: () => void                                 // empty the whole queue
 }
-
-export const maxOf = (p: Player) =>
-  p.maxBuy !== undefined ? p.maxBuy || null : p.price ? snap(p.price) : null
 
 export function Panel({ queue, status, connection, onRetry, onGo, onSearch, onSetMax, onRemove, onClear }: PanelProps) {
   const [collapsed, setCollapsed] = useState(false)
@@ -142,7 +139,12 @@ function Current({
 }: { player: Player; status: Status; busy: boolean; blocked: boolean } & Pick<PanelProps, "onRetry" | "onSearch" | "onSetMax">) {
   const max = maxOf(player)
   const [draft, setDraft] = useState(max ? fmt(max) : "")
-  useEffect(() => setDraft(max ? fmt(max) : ""), [max])
+  // A new Max Buy Now (saved, or synced from another tab) replaces what's in the box.
+  const [shownMax, setShownMax] = useState(max)
+  if (max !== shownMax) {
+    setShownMax(max)
+    setDraft(max ? fmt(max) : "")
+  }
   // −/+ step from what's in the box right now (typed or saved)
   const base = (draft.trim() ? parsePrice(draft) : null) ?? max ?? 200
 

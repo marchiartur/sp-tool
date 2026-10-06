@@ -1,4 +1,6 @@
 // EA transfer market price ladder helpers (shared with the extension).
+import type { Player } from "./types"
+
 export const MIN_PRICE = 200
 export const MAX_PRICE = 15_000_000
 
@@ -12,6 +14,10 @@ export const up = (p: number) => snap(p + stepAt(p))
 export const down = (p: number) => snap(Math.max(MIN_PRICE, p - stepAt(p - 1)))
 
 export const fmt = (n: number) => n.toLocaleString("en-US")
+
+/** The Max Buy Now a search uses: the edited value, else the fut.gg price on the ladder. */
+export const maxOf = (p: Player) =>
+  p.maxBuy !== undefined ? p.maxBuy || null : p.price ? snap(p.price) : null
 
 /** "2600", "2,600", "1,500,000", "2.6k", "1.2m" -> number on the ladder, or null */
 export function parsePrice(text: string): number | null {

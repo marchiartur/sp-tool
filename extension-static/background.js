@@ -46,9 +46,29 @@ const serial = (fn) => {
   return run;
 };
 
+// ---------- what each message may carry ----------
+// Player data comes from fut.gg's pages: keep only well-formed fields before it's stored.
+const FUTGG_ORIGIN = "https://www.fut.gg";
+const fromFutgg = (sender) => sender.origin === FUTGG_ORIGIN;
+const fromWebApp = (sender) => sender.origin === "https://www.ea.com";
+const text = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+
+function cleanPlayer(p) {
+  const defId = Number(p?.defId);
+  if (!Number.isSafeInteger(defId) || defId <= 0) return null;
+  const price = Number.isFinite(p.price) && p.price > 0 && p.price <= 15_000_000 ? Math.round(p.price) : null;
+  const url = typeof p.url === "string" && p.url.startsWith(`${FUTGG_ORIGIN}/`) ? p.url : FUTGG_ORIGIN;
+  return { defId, name: text(p.name, 80) || `Player ${defId}`, url, price };
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   if (DEV && msg?.type === "DEBUG_EVENT") return void debug(msg.source, msg.event, msg.data, tabInfo(sender));
-  const handlers = { SEND_PLAYER: sendPlayer, QUEUE_TEAM: queueTeam, PANEL_READY: panelReady };
+  // Each message is only accepted from the site whose script sends it.
+  const handlers = {
+    SEND_PLAYER: fromFutgg(sender) && sendPlayer,
+    QUEUE_TEAM: fromFutgg(sender) && queueTeam,
+    PANEL_READY: fromWebApp(sender) && panelReady,
+  };
   if (DEV) handlers.DEBUG_OPEN_CURRENT = () => openInWebApp();
   const handler = handlers[msg?.type];
   if (!handler) return;
@@ -72,7 +92,10 @@ async function getQueue() {
 }
 
 // One player from a card. Click: becomes the current player. Shift+click: added to the end.
-async function sendPlayer({ player, team, focus }) {
+async function sendPlayer({ player: raw, team: rawTeam, focus }) {
+  const player = cleanPlayer(raw);
+  if (!player) throw new Error("bad player");
+  const team = text(rawTeam, 60);
   const q = await getQueue();
   const players = [...q.players];
   let i = players.findIndex((p) => p.defId === player.defId);
@@ -92,9 +115,10 @@ async function sendPlayer({ player, team, focus }) {
 }
 
 // Whole gallery page: replaces the queue and opens the first player.
-async function queueTeam({ team, players }) {
-  if (!players?.length) throw new Error("no players");
-  await chrome.storage.local.set({ queue: { team, players, index: 0, done: [] } });
+async function queueTeam({ team, players: raw }) {
+  const players = (Array.isArray(raw) ? raw.slice(0, 500) : []).map(cleanPlayer).filter(Boolean);
+  if (!players.length) throw new Error("no players");
+  await chrome.storage.local.set({ queue: { team: text(team, 60), players, index: 0, done: [] } });
   await openInWebApp();
   return { count: players.length };
 }

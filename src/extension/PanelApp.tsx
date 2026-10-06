@@ -1,8 +1,9 @@
 // The panel as it runs inside the Web App (React, extension isolated world).
 // Queue lives in chrome.storage.local so every tab shows the same queue;
 // only the tab where you click (or the one background.js picks) opens a search.
-import { useCallback, useEffect, useRef, useState } from "react"
-import { Panel, maxOf } from "@/panel/Panel"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
+import { Panel } from "@/panel/Panel"
+import { maxOf } from "@/panel/price"
 import type { Connection, Player, Queue, Status } from "@/panel/types"
 
 const FROM_MAIN = "futgg-ext-main"
@@ -34,11 +35,14 @@ export function PanelApp() {
   const [health, setHealth] = useState<Health>("loading")
   const [online, setOnline] = useState(navigator.onLine)
 
-  const queueRef = useRef(queue)
-  queueRef.current = queue
   const connection: Connection = !online ? "offline" : health
+  // Latest values for callbacks and listeners; a layout effect runs before every other effect reads them.
+  const queueRef = useRef(queue)
   const connectionRef = useRef(connection)
-  connectionRef.current = connection
+  useLayoutEffect(() => {
+    queueRef.current = queue
+    connectionRef.current = connection
+  })
   const pendingOpen = useRef(false)
   const openTimer = useRef<number | undefined>(undefined)
   const heard = useRef(false)

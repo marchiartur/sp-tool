@@ -63,7 +63,8 @@ function connect(browser) {
       const p = msg.id && pending.get(msg.id);
       if (!p) continue;
       pending.delete(msg.id);
-      msg.error ? p.reject(new Error(`${p.method}: ${msg.error.message}`)) : p.resolve(msg.result);
+      if (msg.error) p.reject(new Error(`${p.method}: ${msg.error.message}`));
+      else p.resolve(msg.result);
     }
   });
   fromBrowser.on("error", () => {});

@@ -190,9 +190,12 @@
     if (type === "PING") return health && post({ type: "HEALTH", state: health });
     if (type !== "OPEN") return;
     debug("OPEN received", { defId, price, health });
+    // Any script on the page can post here, so only well-formed searches go through.
+    const validPrice = price == null || (Number.isFinite(price) && price >= 0 && price <= 15000000);
+    if (!Number.isSafeInteger(defId) || defId <= 0 || !validPrice) return;
     if (health !== "ready") return post({ type: "OPEN_FAILED", defId, text: `Web App is ${health}` });
     try {
-      openInMarket(Number(defId), price);
+      openInMarket(defId, price);
     } catch (err) {
       console.error("[fut.gg extension] open failed", err);
       post({ type: "OPEN_FAILED", defId, text: String(err?.message || err) });

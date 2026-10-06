@@ -8,7 +8,6 @@ const WARN = /deferred|waits|offline|NOT FOUND|withoutPrice":\s*[1-9]/i;
 
 let log = [];
 let shown = new Set(SOURCES);
-let queue = null;
 const opened = new Set(); // expanded rows, by timestamp+event
 
 $("version").textContent = `${manifest.version_name || manifest.version} · ${chrome.runtime.id}`;
@@ -18,7 +17,8 @@ for (const s of SOURCES) {
   const label = document.createElement("label");
   label.innerHTML = `<input type="checkbox" checked /> <span class="src src-${s}">${s}</span>`;
   label.querySelector("input").addEventListener("change", (e) => {
-    e.target.checked ? shown.add(s) : shown.delete(s);
+    if (e.target.checked) shown.add(s);
+    else shown.delete(s);
     render();
   });
   $("sources").appendChild(label);
@@ -55,7 +55,8 @@ function render() {
       row.children[4].textContent = text(e.data);
       row.title = e.tab?.url || "";
       row.addEventListener("click", () => {
-        opened.has(key(e)) ? opened.delete(key(e)) : opened.add(key(e));
+        if (opened.has(key(e))) opened.delete(key(e));
+        else opened.add(key(e));
         row.classList.toggle("open");
       });
       return row;
@@ -72,7 +73,6 @@ const note = (event, data) => chrome.runtime.sendMessage({ type: "DEBUG_EVENT", 
 
 // ---------- queue ----------
 function showQueue(q) {
-  queue = q || null;
   $("queueSummary").textContent = q
     ? `${q.team || "(no team)"} · ${q.players.length} players · #${q.index + 1} ${q.players[q.index]?.name || ""} · ${q.done.length} searched`
     : "empty";

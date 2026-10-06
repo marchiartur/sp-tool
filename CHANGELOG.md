@@ -3,6 +3,12 @@
 All notable changes to SP Tool 27 (Scouty Player 27). The newest release is at the top.
 Each release's section here becomes its GitHub release notes and its entry on the site's changelog page.
 
+## [Unreleased]
+
+### Security
+- Player data from fut.gg is checked and cleaned before it's saved to the queue, and queue changes are only accepted from fut.gg pages.
+- The Web App side ignores malformed search requests from other scripts on the page.
+
 ## [1.0.0] - 2026-10-05
 
 ### Added
