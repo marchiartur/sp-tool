@@ -10,7 +10,7 @@ import { Panel } from "@/panel/Panel"
 import { fmt } from "@/panel/price"
 import type { Player } from "@/panel/types"
 import { GetButtons, GitHubMark, SitePage } from "./layout"
-import { REPO, VERSION, zipName } from "./release"
+import { LATEST_ZIP, REPO, VERSION } from "./release"
 import { DEMO_PLAYERS, useDemoQueue } from "./useDemoQueue"
 
 const TEAM = "Charlton"
@@ -307,7 +307,7 @@ function ReadOnly() {
 
 const b = (text: string) => <b className="font-semibold text-foreground">{text}</b>
 const INSTALL: ReactNode[] = [
-  <>Download {b(zipName(VERSION))} from GitHub Releases and unzip it.</>,
+  <>Download {b(LATEST_ZIP)} from GitHub Releases and unzip it.</>,
   <>
     Open <code className="rounded-md bg-secondary px-1.5 py-0.5 text-sm text-foreground">chrome://extensions</code> and turn on {b("Developer mode")}.
   </>,
