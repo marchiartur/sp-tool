@@ -36,7 +36,7 @@ function SectionTitle({ kicker, title, children }: { kicker: string; title: stri
   return (
     <div className="mx-auto mb-11 max-w-2xl text-center">
       <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-primary">{kicker}</p>
-      <h2 className="mt-3 font-display text-3xl font-bold uppercase tracking-wide sm:text-[38px]">{title}</h2>
+      <h2 className="mt-3 font-display text-3xl font-bold uppercase tracking-wide sm:text-[38px] sm:leading-9">{title}</h2>
       {children && <p className="mt-4 text-muted-foreground">{children}</p>}
     </div>
   )
@@ -46,7 +46,7 @@ function SectionTitle({ kicker, title, children }: { kicker: string; title: stri
 
 function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden bg-[radial-gradient(hsl(228_20%_13%)_1px,transparent_1px)] [background-size:22px_22px]">
+    <section id="top" className="relative overflow-hidden bg-[radial-gradient(hsl(228_20%_13%)_1px,transparent_1px)] bg-size-[22px_22px]">
       <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <Badge variant="outline" className="gap-2.5 rounded-full bg-card px-3.5 py-1.5 font-display text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -57,7 +57,7 @@ function Hero() {
             <br />
             <span className="text-primary">Search in one click.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg sm:leading-7">
             <strong className="font-semibold text-foreground">Scouty Player 27</strong> puts an Open button on every fut.gg player card. One click opens
             that player in the FC 27 Web App Transfer Market, with Max Buy Now already set.
           </p>
@@ -244,7 +244,7 @@ function GallerySection() {
       <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
           <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-primary">FUT Gallery</p>
-          <h2 className="mt-3 font-display text-3xl font-bold uppercase tracking-wide sm:text-[38px]">Fill Gallery sets faster</h2>
+          <h2 className="mt-3 font-display text-3xl font-bold uppercase tracking-wide sm:text-[38px] sm:leading-9">Fill Gallery sets faster</h2>
           <p className="mt-4 leading-relaxed text-muted-foreground">
             FC 27's FUT Gallery rewards you for every player that passes through your club: complete a set, raise its grade and earn Gallery
             Tokens for Hall of FUT players. Most of the work is checking what each player in a set costs. SP Tool 27 turns a fut.gg Gallery set

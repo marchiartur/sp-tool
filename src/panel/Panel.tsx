@@ -128,7 +128,7 @@ export function Panel({ queue, status, connection, onRetry, onGo, onSearch, onSe
           </ol>
           <div className="flex justify-end border-t px-2 py-1">
             <Button variant="ghost" size="sm" className="h-9 gap-1.5 text-xs text-muted-foreground hover:text-destructive" onClick={onClear}>
-              <Trash2 className="!size-3.5" /> Clear queue
+              <Trash2 className="size-3.5!" /> Clear queue
             </Button>
           </div>
         </>
@@ -180,7 +180,7 @@ function Current({
           <Plus />
         </Button>
         <Button variant="glow" aria-label="Search" title="Search (Enter)" data-busy={busy} disabled={blocked} className="h-14 w-14 shrink-0 rounded-xl px-0 [--glow-fill:hsl(228_26%_9%)]" onClick={submit}>
-          <Search className="!size-5" />
+          <Search className="size-5!" />
         </Button>
       </div>
 
@@ -214,7 +214,7 @@ function StatusLine({ status, onRetry }: { status: Status; onRetry: () => void }
       <div role="alert" className="flex items-center justify-between gap-2 text-xs text-destructive">
         Couldn't open results
         <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-foreground" onClick={onRetry}>
-          <RotateCw className="!size-3.5" /> Retry
+          <RotateCw className="size-3.5!" /> Retry
         </Button>
       </div>
     )

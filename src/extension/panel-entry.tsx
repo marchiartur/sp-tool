@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client"
 import css from "./panel.css?inline"
 import { PanelApp } from "./PanelApp"
 
+// Tailwind 4 registers its --tw-* variables with @property; they go to the document too.
+const PROPERTY_RULE = /@property\s+[\w-]+\s*\{[^}]*\}/g
+const propertyRules = css.match(PROPERTY_RULE) ?? []
+const shadowCss = css.replace(PROPERTY_RULE, "")
+
 const HOST_ID = "sp-tool-27"
 
 // Fonts and @property must live in the document (they don't work inside a shadow root).
@@ -19,6 +24,7 @@ function injectDocumentStyles() {
     font("Figtree", "figtree-600.woff2", 600),
     font("Figtree", "figtree-700.woff2", 700),
     '@property --angle{syntax:"<angle>";initial-value:0deg;inherits:false}',
+    ...propertyRules,
   ].join("\n")
   document.head.appendChild(style)
 }
@@ -34,7 +40,7 @@ function mount() {
 
   const shadow = host.attachShadow({ mode: "open" })
   const style = document.createElement("style")
-  style.textContent = css
+  style.textContent = shadowCss
   shadow.appendChild(style)
   const root = document.createElement("div")
   shadow.appendChild(root)

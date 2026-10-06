@@ -42,7 +42,7 @@ export function GetButtons({ size = "xl" }: { size?: "xl" | "touch" }) {
       ) : (
         <Button variant="outline" size={size} disabled className={`${shape} bg-transparent disabled:opacity-60`}>
           Chrome Web Store
-          <Badge className="rounded-full px-2 py-0 font-display text-[10px] uppercase tracking-[0.12em] shadow-none">Soon</Badge>
+          <Badge className={`rounded-full px-2 py-0 font-display text-[10px] uppercase tracking-[0.12em] shadow-none ${size === "xl" ? "leading-6" : "leading-[22px]"}`}>Soon</Badge>
         </Button>
       )}
     </>
@@ -69,7 +69,7 @@ export function SiteHeader({ home }: { home: string }) {
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <Button asChild variant="ghost" size="iconTouch" aria-label="Source on GitHub">
             <a href={REPO}>
-              <GitHubMark className="!size-5" />
+              <GitHubMark className="size-5!" />
             </a>
           </Button>
           <Button asChild variant="glow" size="sm" className="hidden rounded-lg sm:inline-flex [--glow-fill:hsl(230_30%_5%)]">

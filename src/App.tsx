@@ -61,7 +61,7 @@ export default function App() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <main className="min-h-full w-full bg-background bg-[radial-gradient(hsl(228_20%_13%)_1px,transparent_1px)] [background-size:22px_22px] px-6 py-8">
+      <main className="min-h-full w-full bg-background bg-[radial-gradient(hsl(228_20%_13%)_1px,transparent_1px)] bg-size-[22px_22px] px-6 py-8">
         {/* Preview-only state switcher */}
         <div className="mx-auto mb-10 flex max-w-[1100px] flex-col gap-2">
           <p className="font-display text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Preview state</p>

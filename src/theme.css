@@ -1,0 +1,138 @@
+/* Shared by the website (index.css) and the extension panel (extension/panel.css).
+   Tokens sit on :root for the page and on :host for the panel's shadow root. */
+
+/* ---------- Theme: "Night Match" ---------- */
+@theme inline {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+@layer base {
+  :root,
+  :host {
+    --background: 230 30% 4%;
+    --foreground: 220 30% 96%;
+    --card: 228 26% 8%;
+    --card-foreground: 220 30% 96%;
+    --popover: 228 26% 10%;
+    --popover-foreground: 220 30% 96%;
+    --primary: 42 89% 64%;          /* gold */
+    --primary-foreground: 230 40% 8%;
+    --secondary: 228 22% 13%;
+    --secondary-foreground: 220 30% 96%;
+    --muted: 228 22% 13%;
+    --muted-foreground: 222 16% 66%;
+    --accent: 228 22% 16%;
+    --accent-foreground: 220 30% 96%;
+    --destructive: 6 90% 66%;
+    --destructive-foreground: 230 40% 8%;
+    --border: 228 20% 17%;
+    --input: 228 20% 19%;
+    --ring: 42 89% 64%;
+    --radius: 0.875rem;
+
+    /* glow palette */
+    /* monochrome ring: a white highlight sweeping through black */
+    --glow-1: #ffffff;
+    --glow-2: #3a3d45;
+    --glow-3: #050608;
+  }
+
+  *, ::before, ::after, ::backdrop, ::file-selector-button { @apply border-border; }
+
+  /* Tailwind 4 dropped v3's pointer cursor on buttons; keep it. */
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+}
+
+/* ---------- Animated gradient border ---------- */
+/* --angle is registered with @property by each page: it doesn't work inside a shadow root. */
+@keyframes glow-spin { to { --angle: 360deg; } }
+
+@layer components {
+  /* The border is the conic gradient painted only in the border box;
+     the fill is painted in the padding box on top of it. */
+  .glow-border {
+    --glow-fill: hsl(var(--card));
+    --glow-width: 1.5px;
+    --glow-speed: 4s;
+    position: relative;
+    isolation: isolate;
+    border: var(--glow-width) solid transparent;
+    background:
+      linear-gradient(var(--glow-fill), var(--glow-fill)) padding-box,
+      conic-gradient(from var(--angle), var(--glow-1), var(--glow-2) 25%, var(--glow-3) 50%, var(--glow-2) 75%, var(--glow-1)) border-box;
+    animation: glow-spin var(--glow-speed) linear infinite;
+  }
+  /* soft halo behind the button, same gradient, blurred */
+  .glow-border::after {
+    content: "";
+    position: absolute;
+    inset: calc(var(--glow-width) * -1);
+    z-index: -1;
+    border-radius: inherit;
+    background: conic-gradient(from var(--angle), var(--glow-1), transparent 30%, transparent 70%, var(--glow-1));
+    filter: blur(12px);
+    opacity: 0.22;
+    animation: glow-spin var(--glow-speed) linear infinite;
+    transition: opacity 200ms ease;
+  }
+  .glow-border:hover::after { opacity: 0.4; }
+  .glow-border[data-busy="true"] { --glow-speed: 0.9s; }
+  .glow-border[data-busy="true"]::after { opacity: 0.55; }
+
+  /* hover-only variant: plain border that lights up on hover/focus */
+  .glow-hover {
+    --glow-fill: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    background: linear-gradient(var(--glow-fill), var(--glow-fill)) padding-box,
+      linear-gradient(hsl(var(--border)), hsl(var(--border))) border-box;
+  }
+  .glow-hover:hover,
+  .glow-hover:focus-visible {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--glow-fill), var(--glow-fill)) padding-box,
+      conic-gradient(from var(--angle), var(--glow-1), var(--glow-2) 25%, var(--glow-3) 50%, var(--glow-2) 75%, var(--glow-1)) border-box;
+    animation: glow-spin 3s linear infinite;
+  }
+
+  .font-display { font-family: "Chakra Petch", "Segoe UI", system-ui, sans-serif; }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-border, .glow-border::after, .glow-hover:hover { animation: none; }
+}
