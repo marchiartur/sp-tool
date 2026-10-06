@@ -108,6 +108,7 @@ export function SiteFooter() {
         </div>
         <nav aria-label="Project" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
           <a href="./changelog.html" className={link}>Changelog</a>
+          <a href="./privacy.html" className={link}>Privacy</a>
           <ExternalLink href={REPO} className={link}>GitHub</ExternalLink>
           <ExternalLink href={`${REPO}/issues`} className={link}>Issues</ExternalLink>
           <ExternalLink href={`${REPO}/blob/main/LICENSE`} className={link}>MIT License</ExternalLink>
