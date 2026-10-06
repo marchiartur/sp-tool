@@ -8,3 +8,4 @@ node_modules/
 .parcel-cache/
 *.zip
 .DS_Store
+/video/
