@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an idea for SP Tool 27
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        SP Tool 27 is read-only by design: requests to buy, bid, list or automate trading will be closed.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The task or problem, before any solution.
+      placeholder: When I work through a big Gallery set, I lose track of which players I've already checked.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+      placeholder: Mark players as checked in the queue panel.
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else

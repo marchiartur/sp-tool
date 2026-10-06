@@ -1,0 +1,50 @@
+name: Bug report
+description: Something doesn't work on fut.gg or in the Web App
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Security problems go through the [security policy](https://github.com/marchiartur/sp-tool/security/policy) instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+      placeholder: |
+        1. Opened a club gallery on fut.gg and clicked Queue team
+        2. Clicked Next in the Web App panel
+        3. The search opened with no Max Buy Now set
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page URL
+      description: The fut.gg page where it happened, if any.
+      placeholder: https://www.fut.gg/...
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      description: Shown on the extension's card at chrome://extensions.
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 141
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Debugger bug report (optional)
+      description: Run `pnpm dev:ext`, reproduce the bug, click **Copy bug report** in the debugger tab and paste it here.
+      render: json
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else

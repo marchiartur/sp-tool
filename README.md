@@ -1,5 +1,7 @@
 # SP Tool 27
 
+[![CI](https://github.com/marchiartur/sp-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/marchiartur/sp-tool/actions/workflows/ci.yml) [![Latest release](https://img.shields.io/github/v/release/marchiartur/sp-tool)](https://github.com/marchiartur/sp-tool/releases/latest) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 **Scouty Player 27**: scout players on fut.gg, open them in the FC 27 Web App Transfer Market in one click, with Max Buy Now already set.
 
 A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
@@ -37,6 +39,9 @@ Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpack
 
 ## Read-only by design
 SP Tool 27 never buys, bids, lists or automates trading of any kind. It only fills in EA's own Transfer Market search screen. Every purchase is a manual click you make yourself.
+
+## Contributing
+Bug reports, ideas and pull requests are welcome: see [CONTRIBUTING.md](.github/CONTRIBUTING.md). Found a security problem? Follow the [security policy](.github/SECURITY.md) and report it privately.
 
 ## Disclaimer
 This project is not affiliated with, endorsed by, or connected to Electronic Arts (EA), EA SPORTS FC, or fut.gg. All trademarks belong to their respective owners. Use at your own risk.
