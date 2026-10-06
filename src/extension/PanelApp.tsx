@@ -8,7 +8,7 @@ import type { Connection, Player, Queue, Status } from "@/panel/types"
 
 const FROM_MAIN = "futgg-ext-main"
 const TO_MAIN = "futgg-ext"
-const OPEN_TIMEOUT_MS = 6000
+const OPEN_TIMEOUT_MS = 9000 // includes up to 3 s waiting for ea-main's search gap
 const EMPTY: Queue = { team: "", players: [], index: 0, done: [] }
 
 type Health = Exclude<Connection, "offline">

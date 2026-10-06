@@ -9,6 +9,11 @@
   let health = null;
   let lastScreen = null;
   let searchCount = 0;
+  // At most one search every few seconds, however fast Next is clicked. A click
+  // inside the gap waits for it, and only the latest waiting click runs.
+  const SEARCH_GAP_MS = 3000;
+  let lastSearchAt = 0;
+  let waitTimer;
 
   const post = (msg) => window.postMessage({ src: TO_PANEL, ...msg }, location.origin);
   const log = (...a) => console.info("[fut.gg extension]", ...a);
@@ -193,14 +198,23 @@
     // Any script on the page can post here, so only well-formed searches go through.
     const validPrice = price == null || (Number.isFinite(price) && price >= 0 && price <= 15000000);
     if (!Number.isSafeInteger(defId) || defId <= 0 || !validPrice) return;
+    clearTimeout(waitTimer);
+    const wait = lastSearchAt + SEARCH_GAP_MS - Date.now();
+    if (wait <= 0) return search(defId, price);
+    debug("search waits for the gap", { defId, waitMs: wait });
+    waitTimer = setTimeout(() => search(defId, price), wait);
+  });
+
+  function search(defId, price) {
     if (health !== "ready") return post({ type: "OPEN_FAILED", defId, text: `Web App is ${health}` });
+    lastSearchAt = Date.now();
     try {
       openInMarket(defId, price);
     } catch (err) {
       console.error("[fut.gg extension] open failed", err);
       post({ type: "OPEN_FAILED", defId, text: String(err?.message || err) });
     }
-  });
+  }
 
   checkHealth();
   setInterval(checkHealth, 2000); // also catches a session that expires later
