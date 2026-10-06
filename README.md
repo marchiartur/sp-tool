@@ -44,7 +44,7 @@ SP Tool 27 never buys, bids, lists or automates trading of any kind. It only fil
 
 ## Is it safe?
 - **It never buys, bids, lists or snipes.** Every purchase is your own click.
-- **One Transfer Market search per click you make,** at most one every 3 seconds. There are no background requests, no auto-advance and no timers.
+- **One Transfer Market search per click you make,** at most one every 3 seconds. There are no background requests and no auto-advance: nothing searches on its own.
 - **Minimal permissions:** storage, plus fut.gg and the Web App. No account, no analytics; nothing leaves your browser.
 - **Open source (MIT).** You can read every line.
 - **Your call:** EA discourages all third-party browser extensions, so use it at your own risk. It is not affiliated with EA or fut.gg.

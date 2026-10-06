@@ -377,7 +377,7 @@ function Install() {
 const FAQ: { q: string; a: ReactNode }[] = [
   {
     q: "Is it safe for my EA account?",
-    a: "SP Tool 27 never buys, bids, lists or snipes, and it runs one Transfer Market search per click you make, at most one every 3 seconds. It has no background requests, no auto-advance and no timers. EA discourages all third-party browser extensions, so use it at your own risk.",
+    a: "SP Tool 27 never buys, bids, lists or snipes, and it runs one Transfer Market search per click you make, at most one every 3 seconds. It has no background requests and no auto-advance: nothing searches on its own. EA discourages all third-party browser extensions, so use it at your own risk.",
   },
   {
     q: "Why does the Min Buy filter switch between 200 and 0?",
