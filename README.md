@@ -45,10 +45,21 @@ This project is not affiliated with, endorsed by, or connected to Electronic Art
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Dev server for the website; the panel's states with sample data are at `/preview.html` |
+| `pnpm dev:ext` | Opens a browser with a dev build of the extension and its debugger; rebuilds and reloads on every save |
 | `pnpm build:ext` | Builds the extension into `extension/` |
 | `pnpm build` | Type-checks and builds the website into `dist/` |
 | `pnpm lint` | Runs oxlint |
 | `pnpm test` | Runs the unit tests |
+
+### Testing with the debugger
+`pnpm dev:ext` builds a dev copy of the extension (`extension-dev/`), opens Brave, Chrome or Edge with a separate profile in `.dev-profile/`, and opens three tabs: the debugger, a fut.gg gallery and the Web App. Log in to the Web App once; the profile keeps the login between runs. Set `SP_BROWSER` to pick a different browser executable.
+
+- **Debugger tab**: a live log of what every part of the extension does (fut.gg clicks, background decisions, panel state, Web App health and each search it builds), with timings. Rows in red are failures. It also has a queue editor, a UI stress-test queue, the open tabs and storage, and **Copy bug report** (version, browser, queue and the last 300 events as JSON).
+- **fut.gg**: cards whose price can't be read get a red dashed outline. Hover a card's Open button to see the parsed defId, name and price.
+- **Web App console**: `__spDebug.probe()` checks every EA piece the extension relies on; `__spDebug.open(defId, price)` runs a search directly.
+- Saving any file in `src/`, `extension-static/` or `extension-debug/` rebuilds, reloads the extension and refreshes the fut.gg, Web App and debugger tabs.
+
+Release builds (`pnpm build:ext`) have all of this switched off and never include the debugger page.
 
 ### Releasing
 1. Bump `version` in `extension-static/manifest.json` and add a matching `## [1.0.1] - YYYY-MM-DD` section to `CHANGELOG.md`.

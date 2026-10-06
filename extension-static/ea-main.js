@@ -2,6 +2,7 @@
 // Read-only: opens EA's own Transfer Market results screen and reports the
 // Web App's health. No bid, buy or list calls anywhere.
 (() => {
+  const DEV = false; // build-extension.mjs --dev flips this on
   const FROM_PANEL = "futgg-ext";
   const TO_PANEL = "futgg-ext-main";
   const started = Date.now();
@@ -11,6 +12,8 @@
 
   const post = (msg) => window.postMessage({ src: TO_PANEL, ...msg }, location.origin);
   const log = (...a) => console.info("[fut.gg extension]", ...a);
+  // Dev builds: the panel forwards these to the debug log (debug.html).
+  const debug = (event, data) => DEV && post({ type: "DEBUG", event, data });
 
   // Same price ladder as src/panel/price.ts (this plain script can't import it): keep them in sync.
   function toValidPrice(price) {
@@ -47,6 +50,7 @@
     else state = "ready";
 
     if (state !== health) {
+      debug("health", { from: health, to: state, appBooted, loggedIn, missing, elapsedMs: elapsed });
       health = state;
       if (state === "broken") log("Web App changed, missing:", missing.join(", "));
       else log("Web App", state);
@@ -124,6 +128,16 @@
     });
 
     const nav = findNav();
+    debug("search built", {
+      defId,
+      requestedPrice: price,
+      maxBuy,
+      minBuy,
+      phone,
+      criteriaCopies: copies.length,
+      nav: nav?.constructor?.name || null,
+      firstSearch: !lastScreen,
+    });
     if (!nav) throw new Error("navigation not found");
 
     const push = () => {
@@ -147,11 +161,35 @@
     }, 200);
   }
 
+  if (DEV) {
+    // Console helpers in the Web App tab (DevTools, top frame): __spDebug.probe(), __spDebug.open(defId, price)
+    window.__spDebug = {
+      probe: () => ({
+        health,
+        appBooted: has(() => typeof getAppMain === "function"),
+        loggedIn: has(() => services.User.getUser()),
+        criteria: has(() => typeof UTSearchCriteriaDTO === "function"),
+        searchTypes: has(() => typeof SearchType === "object"),
+        resultsScreen: has(() => typeof UTMarketSearchResultsSplitViewController === "function"),
+        phone: has(() => isPhone()),
+        marketCache: has(() => typeof services.Item.clearTransferMarketCache === "function"),
+        nav: has(() => findNav()) ? findNav().constructor.name : null,
+        searches: searchCount,
+      }),
+      open: (defId, price) => openInMarket(Number(defId), price),
+      lastScreen: () => lastScreen,
+      toValidPrice,
+    };
+    // Only our own script errors, not the Web App's.
+    window.addEventListener("error", (e) => String(e.filename).startsWith("chrome-extension:") && debug("error", { message: String(e.message), at: `${e.filename}:${e.lineno}` }));
+  }
+
   window.addEventListener("message", (e) => {
     if (e.source !== window || e.data?.src !== FROM_PANEL) return;
     const { type, defId, price } = e.data;
     if (type === "PING") return health && post({ type: "HEALTH", state: health });
     if (type !== "OPEN") return;
+    debug("OPEN received", { defId, price, health });
     if (health !== "ready") return post({ type: "OPEN_FAILED", defId, text: `Web App is ${health}` });
     try {
       openInMarket(Number(defId), price);

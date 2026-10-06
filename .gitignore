@@ -2,6 +2,9 @@ node_modules/
 /dist/
 /ext-build/
 /extension/
+/extension-dev/
+/ext-build-dev/
+/.dev-profile/
 .parcel-cache/
 *.zip
 .DS_Store

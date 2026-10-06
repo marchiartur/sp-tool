@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SP Tool 27 debugger</title>
+  <link rel="stylesheet" href="debug.css" />
+</head>
+<body>
+  <header>
+    <h1>SP Tool 27 <span id="version"></span></h1>
+    <nav>
+      <button data-open="https://www.fut.gg/fut-gallery/">fut.gg gallery</button>
+      <button data-open="https://www.ea.com/ea-sports-fc/ultimate-team/web-app/">Web App</button>
+      <button id="report" class="primary">Copy bug report</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="log">
+      <div class="bar">
+        <h2>Event log <span id="count" class="muted"></span></h2>
+        <input id="search" type="search" placeholder="Filter (text in event or data)" />
+        <span id="sources"></span>
+        <label><input id="errorsOnly" type="checkbox" /> errors only</label>
+        <label><input id="follow" type="checkbox" checked /> follow</label>
+        <button id="clearLog">Clear</button>
+      </div>
+      <div id="events" class="events"></div>
+    </section>
+
+    <aside>
+      <section>
+        <div class="bar"><h2>Queue</h2><span id="queueSummary" class="muted"></span></div>
+        <div class="buttons">
+          <button id="openCurrent" title="Same as clicking Open on fut.gg for the current player">Open current in Web App</button>
+          <button id="stress" title="60 fake players: long names, missing and huge prices. Searches will find nothing; it's for the panel UI.">Load UI stress queue</button>
+          <button id="clearQueue">Clear queue</button>
+        </div>
+        <textarea id="queue" spellcheck="false"></textarea>
+        <div class="buttons">
+          <button id="saveQueue">Save edited JSON</button>
+          <span id="queueError" class="error"></span>
+        </div>
+      </section>
+
+      <section>
+        <div class="bar"><h2>Tabs</h2></div>
+        <ul id="tabs" class="tabs"></ul>
+      </section>
+
+      <section>
+        <div class="bar"><h2>Storage</h2><button id="resetStorage" title="Clears the queue and the pending tab: a fresh install">Reset all</button></div>
+        <pre id="storage"></pre>
+      </section>
+
+      <section class="help">
+        <h2>Tips</h2>
+        <ul>
+          <li>fut.gg cards with a <b class="red">red dashed outline</b> have no readable price. Hover their Open button for what was parsed.</li>
+          <li>In the Web App tab's DevTools console: <code>__spDebug.probe()</code> checks every EA piece the extension relies on; <code>__spDebug.open(defId, price)</code> runs a search directly.</li>
+          <li>Errors from the background worker also show at <code>brave://extensions</code> › SP Tool 27 (dev) › Errors.</li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+  <script src="debug.js"></script>
+</body>
+</html>

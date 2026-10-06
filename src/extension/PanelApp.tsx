@@ -13,6 +13,11 @@ const EMPTY: Queue = { team: "", players: [], index: 0, done: [] }
 type Health = Exclude<Connection, "offline">
 
 const log = (...a: unknown[]) => console.info("[fut.gg extension]", ...a)
+// Dev builds (`pnpm dev:ext`): events go to the debug log shown on debug.html.
+const debug = (event: string, data?: unknown, source = "panel") => {
+  if (!__SP_DEV__ || !chrome.runtime?.id) return
+  chrome.runtime.sendMessage({ type: "DEBUG_EVENT", source, event, data }).catch(() => {})
+}
 const toMain = (msg: object) => window.postMessage({ src: TO_MAIN, ...msg }, location.origin)
 
 async function saveQueue(q: Queue) {
@@ -37,6 +42,7 @@ export function PanelApp() {
   const pendingOpen = useRef(false)
   const openTimer = useRef<number | undefined>(undefined)
   const heard = useRef(false)
+  const openSentAt = useRef(0)
 
   // ---------- open the current player in EA's results screen ----------
   const openCurrent = useCallback((override?: Queue) => {
@@ -45,13 +51,19 @@ export function PanelApp() {
     if (!player) return
     if (connectionRef.current !== "ready") {
       pendingOpen.current = true // runs as soon as the Web App is ready / back online
+      debug("open deferred until ready", { player: player.name, connection: connectionRef.current })
       return
     }
     pendingOpen.current = false
     setStatus({ kind: "searching" })
     toMain({ type: "OPEN", defId: player.defId, price: maxOf(player) })
+    openSentAt.current = Date.now()
+    debug("OPEN sent", { index: q.index, player: player.name, defId: player.defId, price: maxOf(player), edited: player.maxBuy !== undefined })
     window.clearTimeout(openTimer.current)
-    openTimer.current = window.setTimeout(() => setStatus({ kind: "openFailed" }), OPEN_TIMEOUT_MS)
+    openTimer.current = window.setTimeout(() => {
+      debug("open timed out", { player: player.name, afterMs: OPEN_TIMEOUT_MS })
+      setStatus({ kind: "openFailed" })
+    }, OPEN_TIMEOUT_MS)
     if (!q.done.includes(player.defId)) {
       const next = { ...q, done: [...q.done, player.defId] }
       setQueue(next)
@@ -74,17 +86,20 @@ export function PanelApp() {
     const onMessage = (e: MessageEvent) => {
       if (e.source !== window || e.data?.src !== FROM_MAIN) return
       const m = e.data
+      if (m.type === "DEBUG") return debug(m.event, m.data, "ea-main")
       if (m.type === "HEALTH") {
         heard.current = true
         setHealth(m.state as Health)
       }
       if (m.type === "OPENED") {
         window.clearTimeout(openTimer.current)
+        debug("OPENED", { defId: m.defId, ms: Date.now() - openSentAt.current })
         setStatus({ kind: "open" })
       }
       if (m.type === "OPEN_FAILED") {
         window.clearTimeout(openTimer.current)
         log("open failed:", m.text)
+        debug("OPEN_FAILED", { defId: m.defId, text: m.text, ms: Date.now() - openSentAt.current })
         setStatus({ kind: "openFailed" })
       }
     }
@@ -114,6 +129,7 @@ export function PanelApp() {
   useEffect(() => {
     const onRuntime = (msg: { type?: string }, _s: unknown, reply: (r: unknown) => void) => {
       if (msg?.type !== "OPEN_CURRENT") return
+      debug("OPEN_CURRENT from background")
       chrome.storage.local
         .get("queue")
         .then(({ queue: q }) => {
@@ -134,6 +150,9 @@ export function PanelApp() {
     return () => chrome.runtime.onMessage.removeListener(onRuntime)
   }, [openCurrent])
 
+  useEffect(() => debug("connection", connection), [connection])
+  useEffect(() => debug("status", status.kind), [status])
+
   // ---------- when the connection becomes ready ----------
   const announced = useRef(false)
   useEffect(() => {
@@ -144,19 +163,23 @@ export function PanelApp() {
       // This tab may have been opened by a fut.gg click before we loaded.
       chrome.runtime
         .sendMessage({ type: "PANEL_READY" })
-        .then((res: { openCurrent?: boolean }) => res?.openCurrent && openCurrent())
+        .then((res: { openCurrent?: boolean }) => {
+          debug("PANEL_READY answered", res)
+          if (res?.openCurrent) openCurrent()
+        })
         .catch(() => {})
     }
   }, [connection, openCurrent])
 
   // ---------- queue edits ----------
-  const update = (q: Queue) => {
+  const update = (q: Queue, why: string) => {
+    debug(why, { players: q.players.length, index: q.index, current: q.players[q.index]?.name })
     setQueue(q)
     queueRef.current = q
     saveQueue(q)
   }
   const setMax = (defId: number, max: number | undefined) =>
-    update({ ...queueRef.current, players: queueRef.current.players.map((p: Player) => (p.defId === defId ? { ...p, maxBuy: max } : p)) })
+    update({ ...queueRef.current, players: queueRef.current.players.map((p: Player) => (p.defId === defId ? { ...p, maxBuy: max } : p)) }, `set Max Buy Now ${defId} → ${max ?? "fut.gg price"}`)
 
   return (
     <div className="fgx-root">
@@ -169,7 +192,7 @@ export function PanelApp() {
           const q = queueRef.current
           if (!q.players[i]) return
           const next = { ...q, index: i }
-          update(next)
+          update(next, `go to #${i + 1}`)
           openCurrent(next)
         }}
         onSearch={() => openCurrent()}
@@ -180,13 +203,13 @@ export function PanelApp() {
           if (removedIndex === -1) return
           const players = q.players.filter((p) => p.defId !== defId)
           const index = removedIndex < q.index ? q.index - 1 : Math.min(q.index, Math.max(0, players.length - 1))
-          update({ ...q, players, index, done: q.done.filter((d) => d !== defId) })
+          update({ ...q, players, index, done: q.done.filter((d) => d !== defId) }, `remove ${defId}`)
         }}
         onClear={() => {
           window.clearTimeout(openTimer.current)
           pendingOpen.current = false
           setStatus({ kind: "idle" })
-          update(EMPTY)
+          update(EMPTY, "clear queue")
         }}
       />
     </div>

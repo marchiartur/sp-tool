@@ -10,6 +10,7 @@
     "test": "vitest run",
     "preview": "vite preview",
     "build:ext": "node scripts/build-extension.mjs",
+    "dev:ext": "node scripts/dev-extension.mjs",
     "preview:ui": "vite"
   },
   "dependencies": {

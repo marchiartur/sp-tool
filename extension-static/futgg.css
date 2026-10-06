@@ -83,3 +83,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) { .fgx-pill { animation: none; } }
+
+/* dev builds only: cards whose price couldn't be read (hover Open for details) */
+[data-fgx-dev] [data-fgx-no-price] { outline: 2px dashed #ff4d4f !important; outline-offset: -2px; }
