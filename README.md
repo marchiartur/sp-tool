@@ -6,6 +6,8 @@
 
 A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 
+![Queue a FUT Gallery set on fut.gg, then step through it in the Web App with Max Buy Now set](.github/assets/demo.gif)
+
 **Website:** [marchiartur.github.io/sp-tool](https://marchiartur.github.io/sp-tool/) · **What's new:** [CHANGELOG.md](CHANGELOG.md)
 
 ## What it does
@@ -39,6 +41,15 @@ Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpack
 
 ## Read-only by design
 SP Tool 27 never buys, bids, lists or automates trading of any kind. It only fills in EA's own Transfer Market search screen. Every purchase is a manual click you make yourself.
+
+## Is it safe?
+- **It never buys, bids, lists or snipes.** Every purchase is your own click.
+- **One Transfer Market search per click you make,** at most one every 3 seconds. There are no background requests, no auto-advance and no timers.
+- **Minimal permissions:** storage, plus fut.gg and the Web App. No account, no analytics; nothing leaves your browser.
+- **Open source (MIT).** You can read every line.
+- **Your call:** EA discourages all third-party browser extensions, so use it at your own risk. It is not affiliated with EA or fut.gg.
+
+One detail, so nobody is surprised: to stop the Web App from showing cached results, the extension clears EA's market cache and flips the **Min Buy** filter between 200 and 0 on each search. Max Buy Now is the filter that matters.
 
 ## Support the project
 SP Tool 27 is free and always will be. If it saves you time, you can [sponsor its development](https://github.com/sponsors/marchiartur).

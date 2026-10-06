@@ -21,6 +21,7 @@ export default function Landing() {
     <TooltipProvider delayDuration={150}>
       <SitePage home="">
         <Hero />
+        <Video />
         <HowItWorks />
         <Features />
         <GallerySection />
@@ -71,6 +72,29 @@ function Hero() {
         </div>
 
         <Demo />
+      </div>
+    </section>
+  )
+}
+
+// ---------- 30-second launch video ----------
+
+function Video() {
+  return (
+    <section id="video" className="scroll-mt-16 border-t px-4 py-20 sm:px-6 sm:py-24">
+      <div className="mx-auto max-w-[900px]">
+        <SectionTitle kicker="Watch" title="See it in 30 seconds" />
+        <video
+          className="aspect-video w-full rounded-[18px] border bg-card shadow-[0_40px_100px_-40px_rgba(0,0,0,0.9)]"
+          src="./demo.mp4"
+          poster="./demo-poster.jpg"
+          controls
+          muted
+          playsInline
+          preload="none"
+          aria-label="SP Tool 27 launch video: queue a FUT Gallery set on fut.gg, then step through it in the Web App"
+        />
+        <p className="mt-3 text-center text-xs text-muted-foreground">The players in the video are made up.</p>
       </div>
     </section>
   )
@@ -353,7 +377,11 @@ function Install() {
 const FAQ: { q: string; a: ReactNode }[] = [
   {
     q: "Is it safe for my EA account?",
-    a: "SP Tool 27 never trades or automates anything: it opens the same search screen you would open by hand. EA's terms still discourage third-party tools with the Web App, so use it at your own risk.",
+    a: "SP Tool 27 never buys, bids, lists or snipes, and it runs one Transfer Market search per click you make, at most one every 3 seconds. It has no background requests, no auto-advance and no timers. EA discourages all third-party browser extensions, so use it at your own risk.",
+  },
+  {
+    q: "Why does the Min Buy filter switch between 200 and 0?",
+    a: "The Web App can show cached results for a search it has just run, so a changed Max Buy Now wouldn't show fresh listings. The extension clears that cache and flips Min Buy between 200 and 0 on each search, so EA treats every search as new. It doesn't change what you buy: Max Buy Now is the filter that matters.",
   },
   { q: "What does SP stand for?", a: "Scouty Player. You scout players on fut.gg, and it takes them straight to the market. The 27 is for FC 27." },
   {
