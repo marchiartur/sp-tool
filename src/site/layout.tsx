@@ -1,5 +1,5 @@
 // Header, footer and brand marks shared by the site's pages.
-import type { ReactNode } from "react"
+import type { ComponentProps, ReactNode } from "react"
 import { Download, Heart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,6 +24,16 @@ export function GitHubMark({ className }: { className?: string }) {
   )
 }
 
+/** A link to another site: opens in a new tab, without giving that site access to this page. */
+export function ExternalLink({ children, ...props }: ComponentProps<"a">) {
+  return (
+    <a target="_blank" rel="noopener noreferrer" {...props}>
+      {children}
+      <span className="sr-only"> (opens in a new tab)</span>
+    </a>
+  )
+}
+
 /** Zip download (always available) plus the Chrome Web Store button, shown as "Soon" until the listing exists. */
 export function GetButtons({ size = "xl" }: { size?: "xl" | "touch" }) {
   const shape = size === "xl" ? "rounded-xl" : "rounded-xl text-[13px]"
@@ -37,7 +47,7 @@ export function GetButtons({ size = "xl" }: { size?: "xl" | "touch" }) {
       </Button>
       {CHROME_WEB_STORE_URL ? (
         <Button asChild variant="outline" size={size} className={`${shape} bg-transparent`}>
-          <a href={CHROME_WEB_STORE_URL}>Add to Chrome</a>
+          <ExternalLink href={CHROME_WEB_STORE_URL}>Add to Chrome</ExternalLink>
         </Button>
       ) : (
         <Button variant="outline" size={size} disabled className={`${shape} bg-transparent disabled:opacity-60`}>
@@ -67,10 +77,10 @@ export function SiteHeader({ home }: { home: string }) {
           <a href="./changelog.html" className={link}>Changelog</a>
         </nav>
         <div className="ml-auto flex items-center gap-2 md:ml-0">
-          <Button asChild variant="ghost" size="iconTouch" aria-label="Source on GitHub">
-            <a href={REPO}>
+          <Button asChild variant="ghost" size="iconTouch" aria-label="Source on GitHub (opens in a new tab)">
+            <ExternalLink href={REPO}>
               <GitHubMark className="size-5!" />
-            </a>
+            </ExternalLink>
           </Button>
           <Button asChild variant="glow" size="sm" className="hidden rounded-lg sm:inline-flex [--glow-fill:hsl(230_30%_5%)]">
             <a href={`${home}#install`}>Get it</a>
@@ -98,12 +108,12 @@ export function SiteFooter() {
         </div>
         <nav aria-label="Project" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
           <a href="./changelog.html" className={link}>Changelog</a>
-          <a href={REPO} className={link}>GitHub</a>
-          <a href={`${REPO}/issues`} className={link}>Issues</a>
-          <a href={`${REPO}/blob/main/LICENSE`} className={link}>MIT License</a>
-          <a href={SPONSOR_URL} className={`${link} inline-flex items-center gap-1.5`}>
+          <ExternalLink href={REPO} className={link}>GitHub</ExternalLink>
+          <ExternalLink href={`${REPO}/issues`} className={link}>Issues</ExternalLink>
+          <ExternalLink href={`${REPO}/blob/main/LICENSE`} className={link}>MIT License</ExternalLink>
+          <ExternalLink href={SPONSOR_URL} className={`${link} inline-flex items-center gap-1.5`}>
             <Heart className="size-3.5 text-primary" aria-hidden /> Sponsor
-          </a>
+          </ExternalLink>
         </nav>
       </div>
     </footer>

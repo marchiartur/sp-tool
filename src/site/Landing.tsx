@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Panel } from "@/panel/Panel"
 import { fmt } from "@/panel/price"
 import type { Player } from "@/panel/types"
-import { GetButtons, GitHubMark, SitePage } from "./layout"
+import { ExternalLink, GetButtons, GitHubMark, SitePage } from "./layout"
 import { REPO, VERSION, useLatestRelease, zipName } from "./release"
 import { DEMO_PLAYERS, useDemoQueue } from "./useDemoQueue"
 
@@ -339,7 +339,7 @@ function Install() {
             </div>
             <p className="text-[13px] text-muted-foreground">
               One-click install from the Chrome Web Store is coming soon. Prefer to build it yourself?{" "}
-              <a href={`${REPO}#install-from-source`} className="text-foreground underline underline-offset-4">Build from source</a>
+              <ExternalLink href={`${REPO}#install-from-source`} className="text-foreground underline underline-offset-4">Build from source</ExternalLink>
             </p>
           </div>
         </Card>
@@ -366,7 +366,7 @@ const FAQ: { q: string; a: ReactNode }[] = [
     a: (
       <>
         The panel shows “Web App changed” when EA moves things around. Please{" "}
-        <a href={`${REPO}/issues/new/choose`} className="text-foreground underline underline-offset-4">open an issue</a> and paste the line starting with{" "}
+        <ExternalLink href={`${REPO}/issues/new/choose`} className="text-foreground underline underline-offset-4">open an issue</ExternalLink> and paste the line starting with{" "}
         <code className="rounded bg-secondary px-1 text-foreground">[fut.gg extension]</code> from the browser console.
       </>
     ),
@@ -390,9 +390,9 @@ function Faq() {
         </Accordion>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           More questions?{" "}
-          <a href={REPO} className="inline-flex items-center gap-1.5 text-foreground underline underline-offset-4">
+          <ExternalLink href={REPO} className="inline-flex items-center gap-1.5 text-foreground underline underline-offset-4">
             <GitHubMark className="size-3.5" /> Ask on GitHub
-          </a>
+          </ExternalLink>
         </p>
       </div>
     </section>

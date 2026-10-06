@@ -4,7 +4,7 @@ import changelog from "../../CHANGELOG.md?raw"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { parseChangelog } from "./parse-changelog"
-import { SitePage } from "./layout"
+import { ExternalLink, SitePage } from "./layout"
 import { REPO, zipName, zipUrl } from "./release"
 
 const RELEASES = parseChangelog(changelog)
@@ -35,7 +35,7 @@ export default function Changelog() {
           <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-wide sm:text-5xl">What's new</h1>
           <p className="mt-4 text-muted-foreground">
             Every release of SP Tool 27. Older builds stay on{" "}
-            <a href={`${REPO}/releases`} className="text-foreground underline underline-offset-4">GitHub Releases</a>.
+            <ExternalLink href={`${REPO}/releases`} className="text-foreground underline underline-offset-4">GitHub Releases</ExternalLink>.
           </p>
 
           <ol className="mt-12 space-y-6">
