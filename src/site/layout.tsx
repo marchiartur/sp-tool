@@ -5,12 +5,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CHROME_WEB_STORE_URL, DOWNLOAD_URL, REPO, VERSION } from "./release"
 
+/** The SP/27 tile: Chakra Petch Bold outlines in the Night Match gold and foreground, on the page background. */
 export function Logo({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={className}>
-      <circle cx="16" cy="16" r="10.5" fill="none" stroke="currentColor" strokeWidth="2.5" />
-      <circle cx="16" cy="16" r="3" fill="currentColor" />
-      <path d="M16 1.5v7M16 23.5v7M1.5 16h7M23.5 16h7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <svg viewBox="0 0 64 64" aria-hidden className={className}>
+      <rect x="1" y="1" width="62" height="62" rx="14" fill="#07080e" stroke="hsl(228 20% 24%)" strokeWidth="2" />
+      <path fill="hsl(var(--primary))" d="M15.97 29.25L12.51 25.79L12.51 22.59L16.80 22.59L16.80 24.48L17.86 25.54L24.48 25.54L25.57 24.45L25.57 20.74L24.51 19.68L16.03 19.68L12.58 16.23L12.58 10.31L16.03 6.85L26.14 6.85L29.60 10.31L29.60 13.54L25.31 13.54L25.31 11.62L24.26 10.56L17.92 10.56L16.86 11.62L16.86 14.91L17.92 15.97L26.40 15.97L29.86 19.43L29.86 25.73L26.34 29.25L15.97 29.25ZM34.02 29.25L34.02 6.85L48.06 6.85L51.49 10.31L51.49 18.15L48.03 21.63L38.37 21.63L38.37 29.25L34.02 29.25ZM38.37 17.99L46.08 17.99L47.20 16.87L47.20 11.62L46.08 10.50L38.37 10.50L38.37 17.99Z" />
+      <path fill="hsl(var(--foreground))" d="M15.23 57.15L15.23 52.25L26.75 41.79L26.75 39.52L25.70 38.46L20.51 38.46L19.46 39.52L19.46 41.79L15.10 41.79L15.10 38.21L18.56 34.75L27.65 34.75L31.10 38.21L31.10 43.07L19.74 53.18L19.74 53.50L31.23 53.50L31.23 57.15L15.23 57.15ZM35.30 57.15L44.35 38.75L44.35 38.46L33.15 38.46L33.15 34.75L48.90 34.75L48.90 38.85L39.90 57.15L35.30 57.15Z" />
     </svg>
   )
 }
@@ -54,7 +55,7 @@ export function SiteHeader({ home }: { home: string }) {
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
         <a href={`${home}#top`} className="flex items-center gap-2.5" aria-label="SP Tool 27 home">
-          <Logo className="size-6 text-primary" />
+          <Logo className="size-8" />
           <span className="font-display text-lg font-bold uppercase tracking-wider">SP Tool 27</span>
         </a>
         <nav aria-label="Sections" className="ml-auto hidden items-center gap-6 text-sm text-muted-foreground md:flex">
@@ -86,7 +87,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-start md:justify-between">
         <div className="max-w-md">
           <div className="flex items-center gap-2.5">
-            <Logo className="size-5 text-primary" />
+            <Logo className="size-7" />
             <span className="font-display font-bold uppercase tracking-wider">SP Tool 27</span>
           </div>
           <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
