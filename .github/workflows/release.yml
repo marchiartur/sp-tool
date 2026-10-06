@@ -1,7 +1,6 @@
 # Push a tag like v1.0.1 to build the extension and publish it as a GitHub Release
 # named sp-tool-27-v1.0.1.zip, with that version's CHANGELOG.md section as the notes.
-# The same zip is also attached as sp-tool-27.zip, so the site's download link
-# (/releases/latest/download/sp-tool-27.zip) always serves the newest release.
+# The site finds the newest release through GitHub's API, so it needs no redeploy.
 name: Release
 
 on:
@@ -44,11 +43,9 @@ jobs:
       - run: pnpm build:ext
 
       - name: Zip the extension
-        run: |
-          (cd extension && zip -r "../$ZIP" .)
-          cp "$ZIP" sp-tool-27.zip
+        run: cd extension && zip -r "../$ZIP" .
 
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "$ZIP" sp-tool-27.zip --title "SP Tool 27 $GITHUB_REF_NAME" --notes-file notes.md
+        run: gh release create "$GITHUB_REF_NAME" "$ZIP" --title "SP Tool 27 $GITHUB_REF_NAME" --notes-file notes.md

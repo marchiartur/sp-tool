@@ -3,7 +3,7 @@ import type { ReactNode } from "react"
 import { Download } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CHROME_WEB_STORE_URL, DOWNLOAD_URL, REPO, VERSION } from "./release"
+import { CHROME_WEB_STORE_URL, REPO, useLatestRelease } from "./release"
 
 /** The SP/27 tile: Chakra Petch Bold outlines in the Night Match gold and foreground, on the page background. */
 export function Logo({ className }: { className?: string }) {
@@ -27,11 +27,12 @@ export function GitHubMark({ className }: { className?: string }) {
 /** Zip download (always available) plus the Chrome Web Store button, shown as "Soon" until the listing exists. */
 export function GetButtons({ size = "xl" }: { size?: "xl" | "touch" }) {
   const shape = size === "xl" ? "rounded-xl" : "rounded-xl text-[13px]"
+  const latest = useLatestRelease()
   return (
     <>
       <Button asChild variant="glow" size={size} className={`${shape} [--glow-fill:hsl(230_30%_6%)]`}>
-        <a href={DOWNLOAD_URL}>
-          <Download /> Download v{VERSION}
+        <a href={latest.url}>
+          <Download /> Download v{latest.version}
         </a>
       </Button>
       {CHROME_WEB_STORE_URL ? (

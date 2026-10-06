@@ -15,7 +15,7 @@ A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 FC 27's FUT Gallery records every player that passes through your club, and completing sets earns Gallery Tokens for Hall of FUT players. Open any Gallery set on fut.gg (club, league or rarity), click **Queue team**, and price-check every player in the Transfer Market one after another. Buying and selling stay manual.
 
 ## Install
-1. Download **sp-tool-27.zip** from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
+1. Download **sp-tool-27-vX.Y.Z.zip** from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Click **Load unpacked** and select the unzipped folder.
 
@@ -65,7 +65,7 @@ Release builds (`pnpm build:ext`) have all of this switched off and never includ
 1. Bump `version` in `extension-static/manifest.json` and add a matching `## [1.0.1] - YYYY-MM-DD` section to `CHANGELOG.md`.
 2. Commit, tag and push both together: `git tag v1.0.1 && git push origin main v1.0.1`.
 
-The release workflow checks the tag, manifest and changelog agree, then attaches `sp-tool-27-v1.0.1.zip` (plus the same file as `sp-tool-27.zip`) to a GitHub Release with that changelog section as its notes. The site's Download button points at `/releases/latest/download/sp-tool-27.zip`, so it serves the new release as soon as it is published; the version label and changelog page follow the manifest and `CHANGELOG.md`.
+The release workflow checks the tag, manifest and changelog agree, then attaches `sp-tool-27-v1.0.1.zip` to a GitHub Release with that changelog section as its notes. The site's Download button asks GitHub's API for the latest release when the page loads, so it links to the new zip as soon as the release is published, with no site redeploy. If the API can't be reached it opens the latest release page instead. The changelog page follows `CHANGELOG.md`.
 
 ## License
 [MIT](LICENSE)
