@@ -1,9 +1,9 @@
 // Header, footer and brand marks shared by the site's pages.
 import type { ReactNode } from "react"
-import { Download } from "lucide-react"
+import { Download, Heart } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CHROME_WEB_STORE_URL, REPO, useLatestRelease } from "./release"
+import { CHROME_WEB_STORE_URL, REPO, SPONSOR_URL, useLatestRelease } from "./release"
 
 /** The SP/27 tile: Chakra Petch Bold outlines in the Night Match gold and foreground, on the page background. */
 export function Logo({ className }: { className?: string }) {
@@ -101,6 +101,9 @@ export function SiteFooter() {
           <a href={REPO} className={link}>GitHub</a>
           <a href={`${REPO}/issues`} className={link}>Issues</a>
           <a href={`${REPO}/blob/main/LICENSE`} className={link}>MIT License</a>
+          <a href={SPONSOR_URL} className={`${link} inline-flex items-center gap-1.5`}>
+            <Heart className="size-3.5 text-primary" aria-hidden /> Sponsor
+          </a>
         </nav>
       </div>
     </footer>

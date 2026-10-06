@@ -40,6 +40,9 @@ Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpack
 ## Read-only by design
 SP Tool 27 never buys, bids, lists or automates trading of any kind. It only fills in EA's own Transfer Market search screen. Every purchase is a manual click you make yourself.
 
+## Support the project
+SP Tool 27 is free and always will be. If it saves you time, you can [sponsor its development](https://github.com/sponsors/marchiartur).
+
 ## Contributing
 Bug reports, ideas and pull requests are welcome: see [CONTRIBUTING.md](.github/CONTRIBUTING.md). Found a security problem? Follow the [security policy](.github/SECURITY.md) and report it privately.
 

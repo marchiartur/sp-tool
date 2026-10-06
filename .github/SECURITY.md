@@ -17,10 +17,7 @@ Bugs that don't affect security, such as a wrong price or a broken button after 
 
 ## Reporting a vulnerability
 
-Please **don't open a public issue**. Report it privately instead:
-
-- Use **[Report a vulnerability](https://github.com/marchiartur/sp-tool/security/advisories/new)** on the repository's Security tab, or
-- Email **[email removed]** with "SP Tool security" in the subject.
+Please **don't open a public issue**. Report it privately with **[Report a vulnerability](https://github.com/marchiartur/sp-tool/security/advisories/new)** on the repository's Security tab. Only you and the maintainer can see the report.
 
 Include the extension version (shown at `chrome://extensions`), your browser, and steps to reproduce.
 

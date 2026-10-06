@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import manifest from "../../extension-static/manifest.json"
 
 export const REPO = "https://github.com/marchiartur/sp-tool"
+export const SPONSOR_URL = "https://github.com/sponsors/marchiartur"
 export const VERSION = manifest.version
 
 export const zipName = (version: string) => `sp-tool-27-v${version}.zip`
