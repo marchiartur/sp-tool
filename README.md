@@ -19,11 +19,15 @@ A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 FC 27's FUT Gallery records every player that passes through your club, and completing sets earns Gallery Tokens for Hall of FUT players. Open any Gallery set on fut.gg (club, league or rarity), click **Queue team**, and price-check every player in the Transfer Market one after another. Buying and selling stay manual.
 
 ## Install
+**[Add SP Tool 27 from the Chrome Web Store](https://chromewebstore.google.com/detail/sp-tool-27/oijpgeogihdonacfncngfoncdjafdpcf).** It updates automatically.
+
+### Install from the release zip
+For Edge, Brave and other Chromium browsers:
 1. Download **sp-tool-27-vX.Y.Z.zip** from the [latest release](https://github.com/marchiartur/sp-tool/releases/latest) and unzip it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Click **Load unpacked** and select the unzipped folder.
 
-Works in Chrome, Edge, Brave and other Chromium browsers. A Chrome Web Store listing is coming soon. To update, replace the folder with the new release and click the reload icon on the extension's card.
+To update, replace the folder with the new release and click the reload icon on the extension's card.
 
 ### Install from source
 ```bash

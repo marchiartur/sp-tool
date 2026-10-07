@@ -1,7 +1,6 @@
 // Header, footer and brand marks shared by the site's pages.
 import type { ComponentProps, ReactNode } from "react"
 import { Download, Heart } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CHROME_WEB_STORE_URL, REPO, SPONSOR_URL, useLatestRelease } from "./release"
 
@@ -34,27 +33,20 @@ export function ExternalLink({ children, ...props }: ComponentProps<"a">) {
   )
 }
 
-/** Zip download (always available) plus the Chrome Web Store button, shown as "Soon" until the listing exists. */
+/** The Chrome Web Store button, plus the zip download for browsers that load it unpacked. */
 export function GetButtons({ size = "xl" }: { size?: "xl" | "touch" }) {
   const shape = size === "xl" ? "rounded-xl" : "rounded-xl text-[13px]"
   const latest = useLatestRelease()
   return (
     <>
       <Button asChild variant="glow" size={size} className={`${shape} [--glow-fill:hsl(230_30%_6%)]`}>
+        <ExternalLink href={CHROME_WEB_STORE_URL}>Add to Chrome</ExternalLink>
+      </Button>
+      <Button asChild variant="outline" size={size} className={`${shape} bg-transparent`}>
         <a href={latest.url}>
           <Download /> Download v{latest.version}
         </a>
       </Button>
-      {CHROME_WEB_STORE_URL ? (
-        <Button asChild variant="outline" size={size} className={`${shape} bg-transparent`}>
-          <ExternalLink href={CHROME_WEB_STORE_URL}>Add to Chrome</ExternalLink>
-        </Button>
-      ) : (
-        <Button variant="outline" size={size} disabled className={`${shape} bg-transparent disabled:opacity-60`}>
-          Chrome Web Store
-          <Badge className={`rounded-full px-2 py-0 font-display text-[10px] uppercase tracking-[0.12em] shadow-none ${size === "xl" ? "leading-6" : "leading-[22px]"}`}>Soon</Badge>
-        </Button>
-      )}
     </>
   )
 }

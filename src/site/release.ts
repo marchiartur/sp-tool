@@ -41,5 +41,4 @@ export function useLatestRelease(): Latest {
   return latest
 }
 
-// Set to the listing URL once the Chrome Web Store approves it; until then the button shows "Soon".
-export const CHROME_WEB_STORE_URL: string | null = null
+export const CHROME_WEB_STORE_URL = "https://chromewebstore.google.com/detail/sp-tool-27/oijpgeogihdonacfncngfoncdjafdpcf"

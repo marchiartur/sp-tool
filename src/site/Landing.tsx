@@ -334,11 +334,9 @@ function LatestZipName() {
 }
 const b = (text: ReactNode) => <b className="font-semibold text-foreground">{text}</b>
 const INSTALL: ReactNode[] = [
-  <>Download {b(<LatestZipName />)} from GitHub Releases and unzip it.</>,
   <>
-    Open <code className="rounded-md bg-secondary px-1.5 py-0.5 text-sm text-foreground">chrome://extensions</code> and turn on {b("Developer mode")}.
+    Click {b("Add to Chrome")} below, then {b("Add to Chrome")} again on the Chrome Web Store page.
   </>,
-  <>Click {b("Load unpacked")} and pick the unzipped folder.</>,
   <>Open the FC 27 Web App, log in, then click Open on any fut.gg card.</>,
 ]
 
@@ -362,7 +360,9 @@ function Install() {
               <GetButtons size="touch" />
             </div>
             <p className="text-[13px] text-muted-foreground">
-              One-click install from the Chrome Web Store is coming soon. Prefer to build it yourself?{" "}
+              Edge, Brave or another Chromium browser? Download {b(<LatestZipName />)}, unzip it, open{" "}
+              <code className="rounded-md bg-secondary px-1.5 py-0.5 text-foreground">chrome://extensions</code>, turn on {b("Developer mode")}, click{" "}
+              {b("Load unpacked")} and pick the folder. Prefer to build it yourself?{" "}
               <ExternalLink href={`${REPO}#install-from-source`} className="text-foreground underline underline-offset-4">Build from source</ExternalLink>
             </p>
           </div>
