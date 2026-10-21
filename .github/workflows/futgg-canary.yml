@@ -6,8 +6,14 @@
 # to notice is a user. So once a day this renders real fut.gg pages and runs those real
 # selectors over them.
 #
-# A failure means fut.gg changed, not that the build is broken. The issue it opens carries
-# the failing assertions and the rendered pages, which is what fixing it needs:
+# It takes two failures to open an issue: rendering someone else's site over the public
+# internet fails for reasons that have nothing to do with their markup, and a canary that
+# cries on an unlucky minute is one nobody reads. The second attempt renders fresh pages a
+# minute later, and the issue says which of the two things actually broke — the render, or
+# the selectors — because they need different fixes.
+#
+# A selector failure means fut.gg changed, not that the build is broken. The issue it opens
+# carries the failing assertions and the rendered pages, which is what fixing it needs:
 #
 #   gh run download <run id> -n futgg-snapshots -D futgg-snapshots
 #   pnpm test futgg/live
@@ -53,21 +59,38 @@ jobs:
 
       # The runner image ships Chrome, so there is no browser to install and no
       # Playwright-shaped dependency to keep current.
-      - name: Render fut.gg
-        id: render
-        run: node scripts/futgg-snapshot.mjs
-
-      - name: Read it with the extension's own selectors
+      - name: Read fut.gg with the extension's own selectors
         id: canary
         shell: bash
         run: |
           set -o pipefail
-          pnpm test futgg/live 2>&1 | tee canary.log
+          # Renders fut.gg afresh and runs the real selectors over it, leaving in $stage
+          # what it got as far as: a render that never arrived, or selectors that no
+          # longer read the page it rendered.
+          attempt() {
+            : > canary.log
+            stage=render
+            node scripts/futgg-snapshot.mjs 2>&1 | tee -a canary.log || return 1
+            stage=selectors
+            pnpm test futgg/live 2>&1 | tee -a canary.log || return 1
+            stage=ok
+          }
+          stage=ok
+          if ! attempt; then
+            echo "::warning::the canary failed at the $stage stage; rendering again in 60s before saying so"
+            sleep 60
+            attempt || true
+          fi
+          echo "stage=$stage" >> "$GITHUB_OUTPUT"
+          [ "$stage" = ok ]
 
       # Kept whether or not it passed: a passing run's snapshot is the last known-good
-      # shape of the site, which is useful the day one stops passing.
+      # shape of the site, which is useful the day one stops passing. Gated on the files
+      # rather than on the step, because a render that failed on its last attempt can
+      # still have left the pages an earlier one managed.
       - name: Keep the snapshots
-        if: ${{ always() && steps.render.outcome == 'success' }}
+        id: snapshots
+        if: ${{ always() && hashFiles('futgg-snapshots/index.json') != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: futgg-snapshots
@@ -83,17 +106,30 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          RENDERED: ${{ steps.render.outcome }}
+          STAGE: ${{ steps.canary.outputs.stage }}
+          SNAPSHOTS: ${{ steps.snapshots.outcome }}
         run: |
+          if [ "$STAGE" = selectors ]; then
+            title="fut.gg changed: the extension can no longer read it"
+          else
+            title="fut.gg canary could not render the site"
+          fi
           {
-            if [ "$RENDERED" != "success" ]; then
-              echo "The canary could not render fut.gg at all, so whether the selectors still"
-              echo "work is unknown. Either the site was down, or it no longer serves the pages"
-              echo "scripts/futgg-snapshot.mjs looks for."
-            else
+            if [ "$STAGE" = selectors ]; then
               echo "fut.gg renders, but the selectors in \`src/futgg/page.ts\` no longer read it"
               echo "the way they used to. Until this is fixed the pill will be missing, or wrong,"
-              echo "on the pages below."
+              echo "on the pages below. Twice in a row, a minute apart, so this is the site and"
+              echo "not a bad moment."
+            else
+              echo "Chrome could not render fut.gg, twice, a minute apart — so **whether the"
+              echo "selectors still work is unknown and \`src/futgg/page.ts\` is not implicated.**"
+              echo "Either fut.gg was unreachable or unhappy with us, or the render in"
+              echo "\`scripts/futgg-snapshot.mjs\` needs looking at. Check by hand before changing"
+              echo "any selector:"
+              echo
+              echo '```sh'
+              echo "node scripts/futgg-snapshot.mjs && pnpm test futgg/live"
+              echo '```'
             fi
             echo
             echo "<details><summary>What failed</summary>"
@@ -104,13 +140,15 @@ jobs:
             echo
             echo "</details>"
             echo
-            echo "To work on it, with the exact pages this run saw:"
-            echo
-            echo '```sh'
-            echo "gh run download ${{ github.run_id }} -n futgg-snapshots -D futgg-snapshots"
-            echo "pnpm test futgg/live"
-            echo '```'
-            echo
+            if [ "$SNAPSHOTS" = success ]; then
+              echo "To work on it, with the exact pages this run saw:"
+              echo
+              echo '```sh'
+              echo "gh run download ${{ github.run_id }} -n futgg-snapshots -D futgg-snapshots"
+              echo "pnpm test futgg/live"
+              echo '```'
+              echo
+            fi
             echo "[The run]($RUN)"
           } > body.md
           open=$(gh issue list --label futgg --state open --limit 1 --json number --jq '.[0].number // empty')
@@ -118,5 +156,5 @@ jobs:
             gh issue comment "$open" --body-file body.md
           else
             gh label create futgg --description "Reading fut.gg" --color 1d76db --force
-            gh issue create --title "fut.gg changed: the extension can no longer read it" --label futgg --body-file body.md
+            gh issue create --title "$title" --label futgg --body-file body.md
           fi
