@@ -1,0 +1,122 @@
+# Checks that the extension can still read fut.gg.
+#
+# src/futgg/page.ts is the one file that knows how fut.gg builds a page: a handful of CSS
+# selectors and URL patterns. fut.gg owes us nothing and redesigns when it likes, and when
+# it does, the pill quietly stops appearing — nothing throws, no test fails, and the first
+# to notice is a user. So once a day this renders real fut.gg pages and runs those real
+# selectors over them.
+#
+# A failure means fut.gg changed, not that the build is broken. The issue it opens carries
+# the failing assertions and the rendered pages, which is what fixing it needs:
+#
+#   gh run download <run id> -n futgg-snapshots -D futgg-snapshots
+#   pnpm test futgg/live
+#
+# ...then fix src/futgg/page.ts against the snapshot until it passes.
+name: fut.gg canary
+
+on:
+  schedule:
+    - cron: "41 6 * * *" # daily, before the Web Store watch
+  workflow_dispatch:
+  # So a change to the reading code is checked against the live site before it ships,
+  # rather than a day later.
+  pull_request:
+    paths:
+      - "src/futgg/**"
+      - "src/lib/price.ts"
+      - "scripts/futgg-snapshot.mjs"
+      - ".github/workflows/futgg-canary.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: futgg-canary-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The runner image ships Chrome, so there is no browser to install and no
+      # Playwright-shaped dependency to keep current.
+      - name: Render fut.gg
+        id: render
+        run: node scripts/futgg-snapshot.mjs
+
+      - name: Read it with the extension's own selectors
+        id: canary
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm test futgg/live 2>&1 | tee canary.log
+
+      # Kept whether or not it passed: a passing run's snapshot is the last known-good
+      # shape of the site, which is useful the day one stops passing.
+      - name: Keep the snapshots
+        if: ${{ always() && steps.render.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: futgg-snapshots
+          path: |
+            futgg-snapshots/*.html
+            futgg-snapshots/index.json
+          retention-days: 14
+
+      # On a pull request the failure speaks for itself in the checks; an issue is for the
+      # scheduled run, where otherwise nobody is looking.
+      - name: Open an issue
+        if: ${{ failure() && github.event_name != 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RENDERED: ${{ steps.render.outcome }}
+        run: |
+          {
+            if [ "$RENDERED" != "success" ]; then
+              echo "The canary could not render fut.gg at all, so whether the selectors still"
+              echo "work is unknown. Either the site was down, or it no longer serves the pages"
+              echo "scripts/futgg-snapshot.mjs looks for."
+            else
+              echo "fut.gg renders, but the selectors in \`src/futgg/page.ts\` no longer read it"
+              echo "the way they used to. Until this is fixed the pill will be missing, or wrong,"
+              echo "on the pages below."
+            fi
+            echo
+            echo "<details><summary>What failed</summary>"
+            echo
+            echo '```'
+            tail -c 8000 canary.log 2>/dev/null || echo "the canary produced no output"
+            echo '```'
+            echo
+            echo "</details>"
+            echo
+            echo "To work on it, with the exact pages this run saw:"
+            echo
+            echo '```sh'
+            echo "gh run download ${{ github.run_id }} -n futgg-snapshots -D futgg-snapshots"
+            echo "pnpm test futgg/live"
+            echo '```'
+            echo
+            echo "[The run]($RUN)"
+          } > body.md
+          open=$(gh issue list --label futgg --state open --limit 1 --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file body.md
+          else
+            gh label create futgg --description "Reading fut.gg" --color 1d76db --force
+            gh issue create --title "fut.gg changed: the extension can no longer read it" --label futgg --body-file body.md
+          fi

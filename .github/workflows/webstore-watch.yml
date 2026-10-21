@@ -1,0 +1,71 @@
+# Watches the Chrome Web Store listing and opens an issue when something is wrong with it.
+#
+# The store has no webhook for review events, and with publishType DEFAULT_PUBLISH a review
+# that passes publishes itself, so there is nothing to automate on the happy path. What is
+# easy to miss is the unhappy one: a rejection, a policy warning or a takedown arrives as
+# an email and nowhere else. This turns that into an issue on the repo.
+name: Web Store watch
+
+on:
+  schedule:
+    - cron: "17 7 * * *" # once a day, a few minutes off the hour so the runners are free
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    # Skipped until the credentials are in place, like the release job's own store step.
+    if: ${{ vars.CWS_PUBLISHER_ID != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # No install: the script is plain node with no imports outside node: builtins.
+      - name: Read the listing
+        id: check
+        env:
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: oijpgeogihdonacfncngfoncdjafdpcf
+        # pipefail, or tee's exit status would hide the check's.
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/publish-webstore.mjs --check 2>&1 | tee report.txt
+
+      # Only on a failure, and only one issue at a time: a warning or a takedown can sit
+      # there for days, and a fresh issue every morning would be worse than none.
+      - name: Open an issue
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --label webstore --state open --limit 1 --json number --jq '.[0].number // empty')
+          {
+            echo "The daily Web Store check failed."
+            echo
+            echo '```'
+            cat report.txt 2>/dev/null || echo "the check produced no output"
+            echo '```'
+            echo
+            echo "What the store says about the listing is above. Fix it in the"
+            echo "[Developer Dashboard](https://chrome.google.com/webstore/devconsole), then close this."
+            echo
+            echo "[The run]($RUN)"
+          } > body.md
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file body.md
+          else
+            gh label create webstore --description "The Chrome Web Store listing" --color d93f0b --force
+            gh issue create --title "Chrome Web Store: the listing needs attention" --label webstore --body-file body.md
+          fi

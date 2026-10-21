@@ -10,6 +10,7 @@
     "test": "vitest run",
     "preview": "vite preview",
     "build:ext": "node scripts/build-extension.mjs",
+    "canary": "node scripts/futgg-snapshot.mjs && vitest run futgg/live",
     "dev:ext": "node scripts/dev-extension.mjs",
     "preview:ui": "vite"
   },

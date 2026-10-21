@@ -10,11 +10,17 @@
 //
 //   node scripts/publish-webstore.mjs sp-tool-27-v1.1.0.zip   upload and submit
 //   node scripts/publish-webstore.mjs --status                 read the listing, change nothing
+//   node scripts/publish-webstore.mjs --check                  the same read, but exit 1 on bad news
 //   node scripts/publish-webstore.mjs --upload-only <zip>      upload, don't submit for review
 //
 // --status and --upload-only are for checking the credentials before a tag: --status only
 // reads, and an upload on its own leaves a draft in the dashboard that no one else sees
 // until something submits it.
+//
+// --check is what the scheduled watcher (.github/workflows/webstore-watch.yml) runs. The
+// store has no webhook for review events, and publishType DEFAULT_PUBLISH means a passed
+// review needs nothing from us anyway — so the only news worth waking up for is bad news,
+// and --check is the thing that fails on it.
 //
 // Env:
 //   CWS_REFRESH_TOKEN         a refresh token for the owning account (scripts/webstore-token.mjs)
@@ -32,10 +38,11 @@ const UPLOAD_TIMEOUT_MS = 10 * 60 * 1000; // the store unpacks big zips asynchro
 const POLL_MS = 5000;
 
 const args = process.argv.slice(2);
-const statusOnly = args.includes("--status");
+const check = args.includes("--check");
+const statusOnly = check || args.includes("--status");
 const uploadOnly = args.includes("--upload-only");
 const zipPath = args.find((a) => !a.startsWith("--"));
-if (!zipPath && !statusOnly) die("usage: node scripts/publish-webstore.mjs [--status|--upload-only] <zip>");
+if (!zipPath && !statusOnly) die("usage: node scripts/publish-webstore.mjs [--status|--check|--upload-only] <zip>");
 
 const publisher = need("CWS_PUBLISHER_ID");
 const extension = need("CWS_EXTENSION_ID");
@@ -128,6 +135,20 @@ if (statusOnly) {
   if (status.takenDown) console.log("webstore: this item has been taken down");
   if (status.warned) console.log("webstore: this item has been warned");
   console.log(`webstore: the manifest here says v${version}`);
+  if (!check) process.exit(0);
+
+  // Only states that need a person: a review that passed publishes itself, and one still
+  // running is the ordinary case. CANCELLED means the submission was withdrawn without
+  // going live, which from here looks the same as a rejection: the version never shipped.
+  const submitted = String(status.submittedItemRevisionStatus?.state ?? "");
+  const problems = [
+    status.takenDown && "the store has taken this item down",
+    status.warned && "the store has warned this item",
+    /REJECTED/.test(submitted) && "the submitted version was rejected",
+    /CANCELLED/.test(submitted) && "the submitted version was cancelled before it went live",
+  ].filter(Boolean);
+  if (problems.length) die(problems.join("; "));
+  console.log("webstore: nothing needs doing");
   process.exit(0);
 }
 
