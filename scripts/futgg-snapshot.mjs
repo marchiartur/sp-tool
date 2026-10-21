@@ -49,13 +49,16 @@ const die = (message) => {
   process.exit(1);
 };
 
-/** Chrome's own failure, in the one line worth putting in front of someone. Chrome says
- *  little on the way out and says it on stderr, so the tail of that goes in too: without
- *  it a failed render reaches the canary's issue as no information at all. */
+/** Chrome's own failure, in the one line worth putting in front of someone: execFileSync
+ *  puts the whole command line and all of Chrome's output in its message, and a canary
+ *  issue carrying that is a canary issue nobody reads to the end. */
 function why(err) {
   if (err.code === "ETIMEDOUT" || err.signal === "SIGTERM") return `it did not finish within ${RENDER_TIMEOUT_MS / 1000}s`;
+  // Ours, raised below about a page that came back too small, and already a sentence.
+  if (err.stderr == null && err.status == null) return err.message ?? String(err);
   const said = (err.stderr ?? "").trim().split("\n").at(-1)?.slice(0, 200);
-  return said ? `${err.message ?? err} (Chrome said: ${said})` : (err.message ?? String(err));
+  const how = err.status != null ? `Chrome exited ${err.status}` : (err.code ?? "Chrome failed");
+  return said ? `${how}: ${said}` : how;
 }
 
 const sleep = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
