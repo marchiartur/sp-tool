@@ -1,7 +1,10 @@
 // Mounts the React panel inside a Shadow DOM so EA's CSS and ours never collide.
-import { createRoot } from "react-dom/client"
+// Mounts nothing while the extension is switched off in the toolbar popup, and takes the
+// panel off this page the moment it is switched off.
+import { createRoot, type Root } from "react-dom/client"
+import { isEnabled, onEnabledChange } from "@/lib/settings"
 import css from "./panel.css?inline"
-import { PanelApp } from "./PanelApp"
+import { PanelApp, TO_MAIN } from "./PanelApp"
 
 // Tailwind 4 registers its --tw-* variables with @property; they go to the document too.
 const PROPERTY_RULE = /@property\s+[\w-]+\s*\{[^}]*\}/g
@@ -11,7 +14,10 @@ const shadowCss = css.replace(PROPERTY_RULE, "")
 const HOST_ID = "sp-tool-27"
 
 // Fonts and @property must live in the document (they don't work inside a shadow root).
+let styled = false
 function injectDocumentStyles() {
+  if (styled) return
+  styled = true // one @font-face block per page, however often the switch is flipped
   const font = (family: string, file: string, weight: number) =>
     `@font-face{font-family:"${family}";font-weight:${weight};font-style:normal;font-display:swap;src:url("${chrome.runtime.getURL(`fonts/${file}`)}") format("woff2")}`
   const style = document.createElement("style")
@@ -29,8 +35,10 @@ function injectDocumentStyles() {
   document.head.appendChild(style)
 }
 
+let root: Root | null = null
+
 function mount() {
-  if (document.getElementById(HOST_ID)) return
+  if (root || document.getElementById(HOST_ID)) return
   injectDocumentStyles()
 
   const host = document.createElement("div")
@@ -42,9 +50,29 @@ function mount() {
   const style = document.createElement("style")
   style.textContent = shadowCss
   shadow.appendChild(style)
-  const root = document.createElement("div")
-  shadow.appendChild(root)
-  createRoot(root).render(<PanelApp />)
+  const el = document.createElement("div")
+  shadow.appendChild(el)
+  root = createRoot(el)
+  root.render(<PanelApp />)
 }
 
-mount()
+function unmount() {
+  root?.unmount()
+  root = null
+  document.getElementById(HOST_ID)?.remove()
+}
+
+// ea-main.js runs in the page's own context, where there is no extension storage to read:
+// it polls the Web App's health until we tell it the switch has been turned off.
+const tellPage = (on: boolean) => window.postMessage({ src: TO_MAIN, type: "ENABLED", on }, location.origin)
+
+isEnabled().then((on) => {
+  tellPage(on)
+  if (on) mount()
+})
+
+onEnabledChange((on) => {
+  tellPage(on)
+  if (on) mount()
+  else unmount()
+})

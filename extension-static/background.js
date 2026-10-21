@@ -7,6 +7,31 @@ const EMPTY = { team: "", players: [], index: 0, done: [] };
 
 const log = (...a) => console.info("[fut.gg extension]", ...a);
 
+// ---------- the on/off switch ----------
+// One key, written by the toolbar popup (see src/lib/settings.ts; this plain script can't
+// import it). The content scripts follow it themselves; the checks in the handlers below
+// are so a page that was open already can't keep writing to the queue once it is off.
+const ENABLED_KEY = "enabled";
+const isEnabled = async () => (await chrome.storage.local.get(ENABLED_KEY))[ENABLED_KEY] !== false;
+
+// The toolbar icon reads OFF while the extension is off. Badge text doesn't survive a
+// browser restart, so it is set again on startup and after an update.
+async function showSwitch() {
+  try {
+    const on = await isEnabled();
+    await chrome.action.setBadgeText({ text: on ? "" : "OFF" });
+    await chrome.action.setBadgeBackgroundColor({ color: "#4a4f60" });
+  } catch (err) {
+    log("couldn't label the toolbar icon", err);
+  }
+}
+chrome.runtime.onStartup.addListener(showSwitch);
+chrome.runtime.onInstalled.addListener(showSwitch);
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes[ENABLED_KEY]) showSwitch();
+});
+showSwitch();
+
 // ---------- debug log (dev builds only) ----------
 // Every script sends its events here; they're kept in storage.session (survives this
 // worker sleeping, cleared when the browser closes) and shown live on debug.html.
@@ -28,6 +53,7 @@ const tabInfo = (sender) => sender?.tab && { id: sender.tab.id, url: sender.tab.
 if (DEV) {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "session" && changes.debugLog && !changes.debugLog.newValue) logBuf = []; // cleared from debug.html
+    if (area === "local" && changes[ENABLED_KEY]) debug("background", "switch", changes[ENABLED_KEY].newValue === false ? "off" : "on");
     if (area !== "local" || !changes.queue) return;
     const q = changes.queue.newValue;
     debug("background", "queue saved", q ? { team: q.team, players: q.players.length, index: q.index, current: q.players[q.index]?.name, done: q.done.length } : "cleared");
@@ -93,6 +119,7 @@ async function getQueue() {
 
 // One player from a card. Click: becomes the current player. Shift+click: added to the end.
 async function sendPlayer({ player: raw, team: rawTeam, focus }) {
+  if (!(await isEnabled())) throw new Error("the extension is switched off");
   const player = cleanPlayer(raw);
   if (!player) throw new Error("bad player");
   const team = text(rawTeam, 60);
@@ -116,6 +143,7 @@ async function sendPlayer({ player: raw, team: rawTeam, focus }) {
 
 // Whole gallery page: replaces the queue and opens the first player.
 async function queueTeam({ team, players: raw }) {
+  if (!(await isEnabled())) throw new Error("the extension is switched off");
   const players = (Array.isArray(raw) ? raw.slice(0, 500) : []).map(cleanPlayer).filter(Boolean);
   if (!players.length) throw new Error("no players");
   await chrome.storage.local.set({ queue: { team: text(team, 60), players, index: 0, done: [] } });

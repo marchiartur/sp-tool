@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { ExternalLink, SitePage } from "./layout"
 import { REPO } from "./release"
 
-const UPDATED = "October 6, 2026"
+const UPDATED = "October 20, 2026"
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -29,8 +29,8 @@ export default function Privacy() {
           <Section title="What it stores">
             <p>
               Your player queue (player names, fut.gg links and prices, and the Max Buy Now values you set) is saved in your browser with the
-              extension storage API, so it survives a reload and shows up in the Web App tab. It never leaves your device. Clearing the queue or
-              removing the extension deletes it.
+              extension storage API, so it survives a reload and shows up in the Web App tab. Whether you have switched the extension off in its
+              toolbar popup is saved the same way. Neither ever leaves your device. Clearing the queue or removing the extension deletes it.
             </p>
           </Section>
 

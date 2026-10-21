@@ -3,7 +3,7 @@ import { AlertTriangle, Check, ChevronDown, ChevronLeft, ChevronRight, Loader2, 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { down, fmt, maxOf, parsePrice, up } from "./price"
+import { down, fmt, maxOf, parsePrice, up } from "@/lib/price"
 import type { Connection, Player, Queue, Status } from "./types"
 
 export interface PanelProps {

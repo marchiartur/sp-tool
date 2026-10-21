@@ -1,0 +1,116 @@
+/* The toolbar popup: the on/off switch. Same palette as the panel's "Night Match" theme,
+   written by hand because this page loads no Tailwind. */
+@font-face { font-family: "Chakra Petch"; font-weight: 600; font-display: swap; src: url("fonts/chakra-petch-600.woff2") format("woff2"); }
+@font-face { font-family: "Chakra Petch"; font-weight: 700; font-display: swap; src: url("fonts/chakra-petch-700.woff2") format("woff2"); }
+@font-face { font-family: Figtree; font-weight: 400; font-display: swap; src: url("fonts/figtree-400.woff2") format("woff2"); }
+@font-face { font-family: Figtree; font-weight: 500; font-display: swap; src: url("fonts/figtree-500.woff2") format("woff2"); }
+
+:root {
+  --bg: #07080c;
+  --card: #10121a;
+  --line: #22252f;
+  --text: #f2f4f8;
+  --muted: #9aa1b4;
+  --gold: #f4cb63;
+  --off: #4a4f60;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  width: 292px;
+  margin: 0;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 13px/1.45 Figtree, "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+header { display: flex; align-items: center; gap: 9px; }
+header img { border-radius: 6px; }
+h1 {
+  margin: 0;
+  font: 700 14px/1 "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+#version { margin-left: auto; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+#toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+#toggle:hover { border-color: #313545; background: #141723; }
+#toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.text { display: grid; gap: 2px; }
+.name {
+  font: 600 11px/1 "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.state { font-weight: 500; font-size: 15px; }
+
+.track {
+  flex: none;
+  margin-left: auto;
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--gold);
+  transition: background 160ms ease;
+}
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #07080c;
+  transform: translateX(18px);
+  transition: transform 160ms ease;
+}
+
+body.is-off .track { background: var(--off); }
+body.is-off .knob { transform: translateX(0); }
+body.is-off .state { color: var(--muted); }
+
+#hint { margin: 10px 2px 0; color: var(--muted); font-size: 12px; }
+
+#issues {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+#issues:hover { border-color: #313545; background: var(--card); color: var(--text); }
+#issues:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #toggle, #issues, .track, .knob { transition: none; }
+}

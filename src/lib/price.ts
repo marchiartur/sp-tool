@@ -1,5 +1,5 @@
-// EA transfer market price ladder helpers (shared with the extension).
-import type { Player } from "./types"
+// Price helpers shared by the panel, the site and the fut.gg content script.
+import type { Player } from "@/panel/types"
 
 export const MIN_PRICE = 200
 export const MAX_PRICE = 15_000_000
@@ -19,12 +19,20 @@ export const fmt = (n: number) => n.toLocaleString("en-US")
 export const maxOf = (p: Player) =>
   p.maxBuy !== undefined ? p.maxBuy || null : p.price ? snap(p.price) : null
 
-/** "2600", "2,600", "1,500,000", "2.6k", "1.2m" -> number on the ladder, or null */
-export function parsePrice(text: string): number | null {
-  const m = text.trim().toLowerCase().replace(/\s/g, "").match(/^(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)([km])?$/)
+const AMOUNT = /^(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)([km])?$/
+
+/** "2600", "2,600", "1,500,000", "2.6k", "1.2m" -> the number written, or null. */
+export function parseAmount(text: string): number | null {
+  const m = text.trim().toLowerCase().replace(/\s/g, "").match(AMOUNT)
   if (!m) return null
   const n = m[2]
     ? parseFloat(m[1].replace(",", ".")) * (m[2] === "k" ? 1e3 : 1e6)
     : parseInt(m[1].replace(/[.,]/g, ""), 10)
-  return Number.isFinite(n) && n > 0 ? snap(n) : null
+  return Number.isFinite(n) ? n : null
+}
+
+/** The same, snapped to EA's ladder: a value a Max Buy Now field will accept. */
+export function parsePrice(text: string): number | null {
+  const n = parseAmount(text)
+  return n !== null && n > 0 ? snap(n) : null
 }

@@ -3,11 +3,12 @@
 // only the tab where you click (or the one background.js picks) opens a search.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Panel } from "@/panel/Panel"
-import { maxOf } from "@/panel/price"
+import { maxOf } from "@/lib/price"
 import type { Connection, Player, Queue, Status } from "@/panel/types"
 
 const FROM_MAIN = "futgg-ext-main"
-const TO_MAIN = "futgg-ext"
+/** The channel ea-main.js listens on (panel-entry.tsx posts to it too). */
+export const TO_MAIN = "futgg-ext"
 const OPEN_TIMEOUT_MS = 9000 // includes up to 3 s waiting for ea-main's search gap
 const EMPTY: Queue = { team: "", players: [], index: 0, done: [] }
 

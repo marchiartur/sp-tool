@@ -14,6 +14,7 @@ A free, open-source Chrome extension. Read-only: it never buys, bids or lists.
 - Adds an **Open** button to every player card on fut.gg. It opens that player in the Web App Transfer Market.
 - Sets the **Max Buy Now** filter from the card's fut.gg price.
 - **Queue team**: one click on a fut.gg gallery page queues every player in it. A panel in the Web App lets you step through them (Next / Prev, jump to any player, adjust Max Buy Now).
+- **On/off switch**: click the toolbar icon for a small panel that turns the extension off and on. Off means it adds nothing to fut.gg or the Web App — pages you already have open follow along, no refresh needed.
 
 ### Great for the FUT Gallery
 FC 27's FUT Gallery records every player that passes through your club, and completing sets earns Gallery Tokens for Hall of FUT players. Open any Gallery set on fut.gg (club, league or rarity), click **Queue team**, and price-check every player in the Transfer Market one after another. Buying and selling stay manual.

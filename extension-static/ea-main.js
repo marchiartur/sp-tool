@@ -7,6 +7,8 @@
   const TO_PANEL = "futgg-ext-main";
   const started = Date.now();
   let health = null;
+  let enabled = true; // the switch in the toolbar popup; panel.js tells us when it moves
+  let healthTimer = 0;
   let lastScreen = null;
   let searchCount = 0;
   // At most one search every few seconds, however fast Next is clicked. A click
@@ -20,7 +22,7 @@
   // Dev builds: the panel forwards these to the debug log (debug.html).
   const debug = (event, data) => DEV && post({ type: "DEBUG", event, data });
 
-  // Same price ladder as src/panel/price.ts (this plain script can't import it): keep them in sync.
+  // Same price ladder as src/lib/price.ts (this plain script can't import it): keep them in sync.
   function toValidPrice(price) {
     if (!price) return 0;
     const step = price <= 1000 ? 50 : price <= 10000 ? 100 : price <= 50000 ? 250 : price <= 100000 ? 500 : 1000;
@@ -192,8 +194,12 @@
   window.addEventListener("message", (e) => {
     if (e.source !== window || e.data?.src !== FROM_PANEL) return;
     const { type, defId, price } = e.data;
+    if (type === "ENABLED") {
+      enabled = !!e.data.on;
+      return enabled ? startHealth() : stopHealth();
+    }
     if (type === "PING") return health && post({ type: "HEALTH", state: health });
-    if (type !== "OPEN") return;
+    if (type !== "OPEN" || !enabled) return;
     debug("OPEN received", { defId, price, health });
     // Any script on the page can post here, so only well-formed searches go through.
     const validPrice = price == null || (Number.isFinite(price) && price >= 0 && price <= 15000000);
@@ -216,6 +222,19 @@
     }
   }
 
-  checkHealth();
-  setInterval(checkHealth, 2000); // also catches a session that expires later
+  // Health is polled rather than observed: it also catches a session that expires later.
+  // While the extension is switched off nothing here runs at all.
+  function startHealth() {
+    if (healthTimer) return;
+    checkHealth();
+    healthTimer = setInterval(checkHealth, 2000);
+  }
+
+  function stopHealth() {
+    clearInterval(healthTimer);
+    healthTimer = 0;
+    clearTimeout(waitTimer);
+  }
+
+  startHealth();
 })();

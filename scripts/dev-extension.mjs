@@ -17,7 +17,7 @@ const PROFILE = path.join(ROOT, ".dev-profile");
 const START_URLS = ["https://www.fut.gg/fut-gallery/", "https://www.ea.com/ea-sports-fc/ultimate-team/web-app/"];
 const RELOAD_MATCH = /^https:\/\/www\.fut\.gg\/|^https:\/\/www\.ea\.com\/.*ultimate-team\/web-app/;
 const WATCH = ["src", "extension-static", "extension-debug"];
-const IGNORE = /(^|[\\/])(site|.*\.test\.ts$)/; // website-only files don't affect the extension
+const IGNORE = /(^|[\\/])(site|test-setup\.ts$|.*\.test\.ts$)/; // website- and test-only files don't affect the extension
 
 const say = (...a) => console.log(`\x1b[36m[dev:ext]\x1b[0m`, ...a);
 

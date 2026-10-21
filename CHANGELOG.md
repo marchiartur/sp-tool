@@ -3,6 +3,24 @@
 All notable changes to SP Tool 27 (Scouty Player 27). The newest release is at the top.
 Each release's section here becomes its GitHub release notes and its entry on the site's changelog page.
 
+## [1.1.0] - 2026-10-21
+
+### Added
+- **On/off switch**: click the toolbar icon for a small panel that switches the extension off and on. The icon reads **OFF** while it is off.
+- The switch reaches pages you already have open: the **Open** buttons and the queue panel go away the moment you switch off, and come back when you switch on, with no refresh.
+- While it is off the extension adds nothing to fut.gg or the Web App, stops watching the Web App for its connection state, and takes no players from a page that was already open.
+- **Report an issue** in the same panel: it opens this project's GitHub issues in a new tab.
+- **Open** on a player's own fut.gg page, where the card carries no link, and not only on cards in a list.
+- Squad builder support: **Open** on every card in a squad, and **Queue team** to queue the whole squad at once.
+
+### Changed
+- Your queue survives the switch: switching off leaves it alone, so switching back on picks up where you left off.
+
+### Fixed
+- The **Open** button now hangs off the card artwork instead of the link, so it appears on gallery pages, where fut.gg's player link is only a small icon in the card's footer.
+- **Queue team** on a gallery page queues the set's own players only. The "Add players" pool below the set is left out, and the count on the button matches what gets queued.
+- **Queue team** comes back by itself if fut.gg rebuilds the page around it, instead of going missing until a refresh.
+
 ## [1.0.0] - 2026-10-07
 
 ### Added
