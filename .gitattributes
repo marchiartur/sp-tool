@@ -1,0 +1,12 @@
+# Every file in this repo is stored with LF endings. Without this, a tool that writes
+# os.linesep on Windows turns a three-line edit into a whole-file rewrite in the diff.
+* text=auto eol=lf
+
+# Named explicitly rather than left to git's content sniffing, so an asset is never
+# rewritten on its way in or out of the index.
+*.png binary
+*.jpg binary
+*.gif binary
+*.mp4 binary
+*.woff2 binary
+*.zip binary
