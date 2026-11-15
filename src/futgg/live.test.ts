@@ -55,6 +55,12 @@ function open(name: string) {
 
 const prices = (players: (Player | null)[]) => players.filter((p) => p?.price != null).length
 
+/** How many players the gallery page says its set has, from its "0 / 5 players done". */
+const setSize = () => {
+  const m = document.body.textContent?.match(/\/\s*(\d+)\s*players done/i)
+  return m ? Number(m[1]) : null
+}
+
 describe.skipIf(!have)("live fut.gg", () => {
   describe("a FUT Gallery set", () => {
     it("is recognised as a team page", () => {
@@ -75,9 +81,14 @@ describe.skipIf(!have)("live fut.gg", () => {
       const page = open("set")
       const all = cards()
       const set = setCards()
-      // A set is a starting XI at the least, and the pool holds every other eligible
-      // player, so a set page always has far more cards on it than the set itself.
-      expect(set.length, `${page.url}: setCards() found no players`).toBeGreaterThanOrEqual(11)
+      expect(set.length, `${page.url}: setCards() found no players`).toBeGreaterThan(0)
+      // Sets come in any size (Icons has 5, TOTW 20), so the set is checked against the
+      // size fut.gg prints over it, "0 / 5 players done", rather than a fixed number.
+      // If that line goes, the check above still stands.
+      const size = setSize()
+      if (size !== null)
+        expect(set.length, `${page.url}: the page says the set has ${size} players`).toBe(size)
+      // The pool holds every other eligible player, so the page has more cards than the set.
       expect(set.length, `${page.url}: the "Add players" pool is no longer being excluded`).toBeLessThan(all.length)
     })
 
