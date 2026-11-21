@@ -3,6 +3,11 @@
 All notable changes to SP Tool 27 (Scouty Player 27). The newest release is at the top.
 Each release's section here becomes its GitHub release notes and its entry on the site's changelog page.
 
+## [1.1.1] - 2026-11-21
+
+### Fixed
+- **Queue team** on a gallery page showed 0 and stayed greyed out until fut.gg had finished loading the "Add players" pool below the set. It now counts the set's players as soon as they're on the page, whether the pool has loaded or not.
+
 ## [1.1.0] - 2026-10-21
 
 ### Added
