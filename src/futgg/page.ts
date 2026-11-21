@@ -148,12 +148,16 @@ export function cards(): Card[] {
 }
 
 /** A gallery page lists the set's lineup, then every other player eligible for it under
- *  an "Add players" heading. */
+ *  an "Add players" heading. Only a list after that heading can be the pool: fut.gg
+ *  fetches the pool once the page has loaded, and until then it is placeholder cards
+ *  with no links, so climbing from the heading for any list with links would reach the
+ *  lineup above it and take the set itself for the pool. */
 function poolList(): Element | null {
-  let node: Element | null =
-    [...document.querySelectorAll(SEL.heading)].find((h) => POOL_RE.test(h.textContent?.trim() ?? "")) ?? null
+  const heading = [...document.querySelectorAll(SEL.heading)].find((h) => POOL_RE.test(h.textContent?.trim() ?? ""))
+  const after = (el: Element) => !!heading && !!(heading.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)
+  let node: Element | null = heading ?? null
   for (let i = 0; node && i < 6; i++, node = node.parentElement) {
-    const list = node.querySelector("ul")
+    const list = [...node.querySelectorAll("ul")].find(after)
     if (list?.querySelector(SEL.link)) return list
   }
   return null

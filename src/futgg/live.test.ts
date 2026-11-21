@@ -61,6 +61,9 @@ const setSize = () => {
   return m ? Number(m[1]) : null
 }
 
+/** Whether the "Add players" pool was still fetching when the page was rendered. */
+const poolLoading = () => document.querySelector('ul[aria-busy="true"]') !== null
+
 describe.skipIf(!have)("live fut.gg", () => {
   describe("a FUT Gallery set", () => {
     it("is recognised as a team page", () => {
@@ -88,8 +91,11 @@ describe.skipIf(!have)("live fut.gg", () => {
       const size = setSize()
       if (size !== null)
         expect(set.length, `${page.url}: the page says the set has ${size} players`).toBe(size)
-      // The pool holds every other eligible player, so the page has more cards than the set.
-      expect(set.length, `${page.url}: the "Add players" pool is no longer being excluded`).toBeLessThan(all.length)
+      // The pool holds every other eligible player, so the page has more cards than the set
+      // — once it has loaded. fut.gg fetches it after the page does, and --dump-dom can
+      // print before it lands, leaving only placeholders with nothing to exclude.
+      if (!poolLoading())
+        expect(set.length, `${page.url}: the "Add players" pool is no longer being excluded`).toBeLessThan(all.length)
     })
 
     it("reads every player off his card", () => {
@@ -103,8 +109,10 @@ describe.skipIf(!have)("live fut.gg", () => {
       }
     })
 
-    it("reads the prices fut.gg prints on the cards", () => {
+    it("reads the prices fut.gg prints on the cards", (ctx) => {
       const page = open("set")
+      // Prices arrive with the same fetch as the pool; a render that beat it has none to read.
+      if (poolLoading()) ctx.skip()
       const read = setCards().map((c) => c.read())
       // Some cards are genuinely priceless — untradeable, or no listing yet — so this
       // asks only that the coin selector still finds most of them.

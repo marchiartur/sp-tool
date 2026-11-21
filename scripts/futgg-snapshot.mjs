@@ -11,10 +11,14 @@
 //   node scripts/futgg-snapshot.mjs          render every page
 //   node scripts/futgg-snapshot.mjs --keep    don't clear old snapshots first
 //
-// Not --virtual-time-budget, which this used to pass to settle fut.gg's price fetch: that
-// budget is a fake clock, and it stops advancing while the page waits on a request that
-// never answers. Chrome then never prints and never exits, and a canary that cannot
-// render says "fut.gg changed" when all that happened was an unlucky minute.
+// Settling. fut.gg fetches a gallery set's "Add players" pool and its prices only after
+// the page has loaded, so a plain --dump-dom prints placeholders, and the canary's pool and
+// price checks have nothing to check. --virtual-time-budget lets the page run on for a
+// while first, but that budget is a fake clock which stops advancing while the page waits
+// on a request that never answers: Chrome then never prints and never exits. So a page is
+// rendered settled under a timeout of its own, and if that hangs, plain instead — an
+// unsettled page skips those checks (live.test.ts sees the placeholders), where a hung
+// render would say "fut.gg changed" when all that happened was an unlucky minute.
 //
 // Which pages: the set and the player are discovered from fut.gg's own index pages rather
 // than hard-coded, because gallery sets rotate and a player can leave the game. So the
@@ -30,6 +34,10 @@ import path from "node:path";
 const OUT = "futgg-snapshots";
 const SITE = "https://www.fut.gg";
 const RENDER_TIMEOUT_MS = 60_000;
+// How long a page may run on after loading: enough for fut.gg's pool and price fetch.
+const SETTLE_BUDGET_MS = 15_000;
+// Real seconds a settled render gets before it counts as hung and the plain one is used.
+const SETTLE_TIMEOUT_MS = 45_000;
 // A render is a page off the live internet, so one bad one is not news. Two in a row is.
 const RENDER_TRIES = 2;
 const RETRY_PAUSE_MS = 2_000;
@@ -53,7 +61,7 @@ const die = (message) => {
  *  puts the whole command line and all of Chrome's output in its message, and a canary
  *  issue carrying that is a canary issue nobody reads to the end. */
 function why(err) {
-  if (err.code === "ETIMEDOUT" || err.signal === "SIGTERM") return `it did not finish within ${RENDER_TIMEOUT_MS / 1000}s`;
+  if (timedOut(err)) return `it did not finish within ${RENDER_TIMEOUT_MS / 1000}s`;
   // Ours, raised below about a page that came back too small, and already a sentence.
   if (err.stderr == null && err.status == null) return err.message ?? String(err);
   const said = (err.stderr ?? "").trim().split("\n").at(-1)?.slice(0, 200);
@@ -81,7 +89,9 @@ function chrome() {
 
 const BROWSER = chrome();
 
-function dumpDom(url) {
+const timedOut = (err) => err.code === "ETIMEDOUT" || err.signal === "SIGTERM";
+
+function dumpDom(url, { settle = false } = {}) {
   // A throwaway profile each time, so nothing a page stored can change the next render.
   // Absolute: Chrome resolves a relative --user-data-dir against somewhere of its own
   // choosing and, on Windows, gives up with "failed to create data directory".
@@ -99,10 +109,11 @@ function dumpDom(url) {
         "--window-size=1440,2400", // wide enough that fut.gg lays out its desktop grid
         `--user-data-dir=${profile}`,
         `--user-agent=${UA}`,
+        ...(settle ? [`--virtual-time-budget=${SETTLE_BUDGET_MS}`] : []),
         "--dump-dom",
         url,
       ],
-      { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: RENDER_TIMEOUT_MS, stdio: ["ignore", "pipe", "pipe"] },
+      { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: settle ? SETTLE_TIMEOUT_MS : RENDER_TIMEOUT_MS, stdio: ["ignore", "pipe", "pipe"] },
     );
   } finally {
     // Chrome can still hold files under its own profile for a moment after printing, and
@@ -114,15 +125,26 @@ function dumpDom(url) {
   }
 }
 
+/** The page once its late fetches have landed, or as loaded if waiting for them hangs. */
+function settled(url) {
+  try {
+    return dumpDom(url, { settle: true });
+  } catch (err) {
+    if (!timedOut(err)) throw err;
+    process.stdout.write(`(did not settle within ${SETTLE_TIMEOUT_MS / 1000}s; taking it as loaded) `);
+    return dumpDom(url);
+  }
+}
+
 /** The DOM after the page's own scripts have run, as a content script would find it.
  *  Every page goes through the browser, index pages included: fut.gg answers 403 to a
  *  bare fetch, and matching whatever it checks for would be a second thing to maintain. */
-function render(url) {
+function render(url, { settle = false } = {}) {
   let last;
   for (let attempt = 1; attempt <= RENDER_TRIES; attempt++) {
     if (attempt > 1) sleep(RETRY_PAUSE_MS);
     try {
-      const html = dumpDom(url);
+      const html = settle ? settled(url) : dumpDom(url);
       if (html.length >= MIN_BYTES) return html;
       last = new Error(`it rendered only ${html.length} bytes, so it isn't the page we wanted`);
     } catch (err) {
@@ -163,7 +185,7 @@ for (const [name, path] of Object.entries(pages)) {
   process.stdout.write(`snapshot: ${name} ${url} ... `);
   let html;
   try {
-    html = render(url);
+    html = render(url, { settle: true });
   } catch (err) {
     die(`Chrome couldn't render ${url}: ${why(err)}`);
   }
