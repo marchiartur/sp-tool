@@ -114,6 +114,14 @@ jobs:
           else
             title="fut.gg canary could not render the site"
           fi
+          # What broke, without when or how slowly: the stage, and for selectors the tests
+          # that failed (their FAIL lines, colour stripped — the timings live elsewhere).
+          fingerprint=$({
+            echo "$STAGE"
+            if [ "$STAGE" = selectors ]; then
+              perl -pe 's/\e\[[0-9;]*m//g' canary.log | grep -E '^[[:space:]]*FAIL ' | sed -E 's/^[[:space:]]+//' | sort -u
+            fi
+          } | sha256sum | cut -c1-16)
           {
             if [ "$STAGE" = selectors ]; then
               echo "fut.gg renders, but the selectors in \`src/futgg/page.ts\` no longer read it"
@@ -149,11 +157,18 @@ jobs:
               echo '```'
               echo
             fi
-            echo "[The run]($RUN)"
+            echo "[The run]($RUN) · last seen failing $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo
+            echo "<!-- canary: $fingerprint -->"
           } > body.md
-          open=$(gh issue list --label futgg --state open --limit 1 --json number --jq '.[0].number // empty')
-          if [ -n "$open" ]; then
-            gh issue comment "$open" --body-file body.md
+          # One issue per failure. The same failure as an open issue is that issue again:
+          # its report is brought up to date in place (fresh run, fresh snapshots), so a
+          # fut.gg change that takes a week to fix is one issue rather than seven posts. A
+          # different failure is a different thing to fix, so it gets an issue of its own.
+          same=$(gh issue list --label futgg --state open --limit 100 --json number,body \
+            --jq "map(select(.body | contains(\"<!-- canary: $fingerprint -->\"))) | .[0].number // empty")
+          if [ -n "$same" ]; then
+            gh issue edit "$same" --body-file body.md
           else
             gh label create futgg --description "Reading fut.gg" --color 1d76db --force
             gh issue create --title "$title" --label futgg --body-file body.md

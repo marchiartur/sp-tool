@@ -143,6 +143,21 @@ describe("the set on a gallery page", () => {
     expect(setCards().map((c) => c.read()?.name)).toEqual(["Bernd Leno"])
   })
 
+  it("keeps the set while the pool is still loading", () => {
+    // fut.gg fetches the pool after the page loads; until then it is placeholder art
+    // with no links, in its own section after the lineup.
+    document.body.innerHTML = `
+      <div>
+        <h2>Cheapest grade S lineup</h2>
+        <ul>${galleryCard("/players/192563-bernd-leno/27-192563/", "Leno", "900")}</ul>
+      </div>
+      <section data-gallery-builder-pool="true">
+        <div><h2>Add players</h2></div>
+        <ul aria-busy="true"><li><div><img src="/public-assets/placeholder-card.webp" alt="Player Card"></div></li></ul>
+      </section>`
+    expect(setCards().map((c) => c.read()?.name)).toEqual(["Bernd Leno"])
+  })
+
   it("counts every card when there is no pool", () => {
     document.body.innerHTML = withPool.replace("Add players30", "More Fulham players")
     expect(setCards()).toHaveLength(3)
